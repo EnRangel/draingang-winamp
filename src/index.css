@@ -135,3 +135,37 @@ h1 {
   color: #090a0c;
   background: #ff334d;
 }
+
+.play-pause-btn {
+  /* Center this button inside the player's grid layout. */
+  justify-self: center;
+
+  margin: 1rem 0;
+  padding: 0.75rem 1.5rem;
+  border: 1px solid #9edcff;
+
+  color: #eef7ff;
+  background: #101b22;
+  font: inherit;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+
+  /* Buttons must be excluded from the window's drag area. */
+  -webkit-app-region: no-drag;
+}
+
+.play-pause-btn:hover {
+  color: #090a0c;
+  background: #9edcff;
+}
+
+.track-file-input {
+  max-width: 260px;
+  margin-top: 1rem;
+
+  color: #a9b4bd;
+  font: inherit;
+
+  /* The user must be able to click this instead of dragging the window. */
+  -webkit-app-region: no-drag;
+}
