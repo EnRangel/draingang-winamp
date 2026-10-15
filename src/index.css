@@ -86,6 +86,30 @@ h1 {
   color: #a9b4bd;
 }
 
+.window-minimize-btn {
+  position: absolute;
+  top: 105px;
+  right: 145px;
+
+  width: 32px;
+  height: 32px;
+  border: 1px solid #9edcff;
+
+  color: white;
+  background: #164862;
+  font: inherit;
+  font-size: 1.25rem;
+  cursor: pointer;
+
+  /* Prevent this button from acting like part of the drag area. */
+  -webkit-app-region: no-drag;
+}
+
+.window-minimize-btn:hover {
+  color: #090a0c;
+  background: #9edcff;
+}
+
 .window-close-btn {
   position: absolute;
   top: 105px;

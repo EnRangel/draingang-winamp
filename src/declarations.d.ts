@@ -7,6 +7,7 @@ declare module '*.css';
  */
 interface Window {
   electronAPI: {
+    minimizeWindow: () => void;
     // This function takes no arguments and returns no value.
     closeWindow: () => void;
   };
