@@ -50,24 +50,24 @@ app.whenReady().then(() => {
    */
   ipcMain.on('window:minimize', (event) => {
     const senderWindow = BrowserWindow.fromWebContents(event.sender);
-    if(senderWindow) {
+    if (senderWindow) {
       senderWindow.minimize();
     }
   });
 
   ipcMain.on('window:close', (event) => {
     const senderWindow = BrowserWindow.fromWebContents(event.sender);
-  // `?.` calls close only if Electron found the sender's window.
+    // `?.` calls close only if Electron found the sender's window.
     if (senderWindow) {
       senderWindow.close();
     }
   });
-  
+
   createWindow();
 
   // macOS applications commonly reopen a window when their dock icon is
   // clicked. This does nothing on Windows, but keeps the project portable.
-app.on('activate', () => {
+  app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
       createWindow();
     }
