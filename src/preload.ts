@@ -1,6 +1,15 @@
-// This file will eventually expose a small, safe set of desktop features to
-// our interface—for example, opening a music-file picker. Keeping that access
-// here prevents the web page from receiving unrestricted computer access.
+import { contextBridge, ipcRenderer } from 'electron';
 
-// `export {}` marks this as a TypeScript module while it is intentionally empty.
-export {};
+/*
+ * Expose a small API to the React side of the application.
+ *
+ * React will be allowed to request "close the window", but it will not
+ * receive unrestricted access to Electron or the user's computer.
+ */
+contextBridge.exposeInMainWorld('electronAPI', {
+  closeWindow: () => {
+    // IPC means inter-process communication.
+    // This sends a named message to Electron's main process.
+    ipcRenderer.send('window:close');
+  },
+});

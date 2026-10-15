@@ -1,5 +1,6 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import started from 'electron-squirrel-startup';
+// ipcMain receives messages in Electron’s main process.
 
 // Webpack creates these two values while it builds the application.
 // `declare` tells TypeScript that the values exist even though they are not
@@ -43,6 +44,18 @@ function createWindow(): void {
 // `whenReady()` finishes later, after Electron has initialized. `.then(...)`
 // says what should happen next: create our window.
 app.whenReady().then(() => {
+  /*
+   * Listen for the message sent by preload.ts.
+   * `event.sender` identifies the page that sent the message.
+   */
+  ipcMain.on('window:close', (event) => {
+    const senderWindow = BrowserWindow.fromWebContents(event.sender);
+  // `?.` calls close only if Electron found the sender's window.
+    if (senderWindow) {
+      senderWindow.close();
+    }
+  });
+  
   createWindow();
 
   // macOS applications commonly reopen a window when their dock icon is

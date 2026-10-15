@@ -24,6 +24,8 @@ body {
 }
 
 .milestone {
+  position: relative;
+
   width: 520px;
   height: 520px;
   padding: 6rem;
@@ -63,7 +65,7 @@ body {
   );
 
   /* This visible shape now acts like the missing Windows title bar. */
-  app-region: drag;
+  -webkit-app-region: drag;
   user-select: none;
 }
 
@@ -82,4 +84,30 @@ h1 {
 #status {
   margin-bottom: 0;
   color: #a9b4bd;
+}
+
+.window-close-btn {
+  position: absolute;
+  top: 105px;
+  right: 105px;
+
+  width: 32px;
+  height: 32px;
+  border: 1px solid #ff334d;
+
+  color: white;
+  background: #8f0016;
+  font: inherit;
+  font-size: 1.25rem;
+  cursor: pointer;
+  /*
+   * The parent shape is draggable. This excludes the button from that
+   * draggable area so it can receive clicks.
+   */
+  -webkit-app-region: no-drag;
+}
+
+.window-close-btn:hover {
+  color: #090a0c;
+  background: #ff334d;
 }
