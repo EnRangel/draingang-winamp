@@ -1,7 +1,15 @@
 // A React component is a function that returns interface elements.
+function handleCloseBtnClick() {
+    window.electronAPI.closeWindow();
+}
+
 function App() {
   return (
     <main className="milestone">
+        {/* Without parentheses, we give React the function to run later. With parentheses, the function would run immediately while the component is being created. */}
+      <button className="window-close-btn" type="button" aria-label="Close Drainamp" onClick={handleCloseBtnClick}>
+        x
+      </button>
       <p className="eyebrow">DRAINAMP // STEP 02</p>
 
       <h1>React is ready.</h1>
