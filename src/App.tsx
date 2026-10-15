@@ -3,20 +3,27 @@ function handleCloseBtnClick() {
     window.electronAPI.closeWindow();
 }
 
+function handleMinimizeBtnClick() {
+    window.electronAPI.minimizeWindow();
+}
+
 function App() {
   return (
     <main className="milestone">
+        <button className="window-minimize-btn" type="button" aria-label="Minimize Drainamp" onClick={handleMinimizeBtnClick}>
+        -
+        </button>
         {/* Without parentheses, we give React the function to run later. With parentheses, the function would run immediately while the component is being created. */}
-      <button className="window-close-btn" type="button" aria-label="Close Drainamp" onClick={handleCloseBtnClick}>
+        <button className="window-close-btn" type="button" aria-label="Close Drainamp" onClick={handleCloseBtnClick}>
         x
-      </button>
-      <p className="eyebrow">DRAINAMP // STEP 02</p>
+        </button>
+        <p className="eyebrow">DRAINAMP // STEP 02</p>
 
-      <h1>React is ready.</h1>
+        <h1>React is ready.</h1>
 
-      <p id="status">
-        One strange window. More strange things coming soon.
-      </p>
+        <p id="status">
+            One strange window. More strange things coming soon.
+        </p>
     </main>
   );
 }

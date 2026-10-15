@@ -7,6 +7,10 @@ import { contextBridge, ipcRenderer } from 'electron';
  * receive unrestricted access to Electron or the user's computer.
  */
 contextBridge.exposeInMainWorld('electronAPI', {
+  minimizeWindow: () => {
+    ipcRenderer.send('window:minimize');
+  },
+
   closeWindow: () => {
     // IPC means inter-process communication.
     // This sends a named message to Electron's main process.
