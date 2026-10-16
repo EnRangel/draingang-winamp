@@ -169,3 +169,14 @@ h1 {
   /* The user must be able to click this instead of dragging the window. */
   -webkit-app-region: no-drag;
 }
+
+.audio-test-player {
+  width: 280px;
+  margin-top: 0.5rem;
+
+  /* Center the entire control inside the widest part of our shape. */
+  justify-self: center;
+
+  /* Allow clicks instead of treating the player as a drag handle. */
+  -webkit-app-region: no-drag;
+}
