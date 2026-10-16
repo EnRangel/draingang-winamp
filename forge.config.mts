@@ -25,6 +25,13 @@ const config: ForgeConfig = {
   plugins: [
     new AutoUnpackNativesPlugin({}),
     new WebpackPlugin({
+            /*
+      * The selected MP3 receives a temporary blob: address.
+      * This permits audio elements to load that kind of address.
+      */
+      devContentSecurityPolicy:
+        "default-src 'self' 'unsafe-inline' data:; script-src 'self' 'unsafe-eval' 'unsafe-inline' data:; media-src 'self' blob:;",
+
       mainConfig,
       renderer: {
         config: rendererConfig,

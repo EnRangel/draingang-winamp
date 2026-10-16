@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent } from 'react';
+import { useRef, useState, type ChangeEvent } from 'react';
 
 // A React component is a function that returns interface elements.
 function handleCloseBtnClick() {
@@ -10,16 +10,44 @@ function handleMinimizeBtnClick() {
 }
 
 function App() {
+    /*
+    * A ref lets us access the real <audio> element so we can call its
+    * play() and pause() functions later.
+    */
+  const audioPlayer = useRef<HTMLAudioElement | null>(null);
+  
   const [isPlaying, setIsPlaying] = useState(false);
   const [trackName, setTrackName] = useState('No track selected');
+  const [audioSource, setAudioSource] = useState('');
 
-  function handlePlayPauseBtnClick() {
-    if (isPlaying) {
-      setIsPlaying(false);
-    } else {
+  async function handlePlayPauseBtnClick() {
+    const audioElement = audioPlayer.current;
+
+    if (audioElement === null) {
+        return;
+    }
+
+    if (audioSource === '') {
+        return;
+    }
+
+  if (isPlaying) {
+    audioElement.pause();
+    setIsPlaying(false);
+  } else {
+    try {
+      /*
+       * play() finishes asynchronously, so await waits for the browser
+       * to confirm that playback actually started.
+       */
+      await audioElement.play();
       setIsPlaying(true);
+    } catch (error) {
+      // This helps us diagnose a file that cannot be played.
+      console.error('The selected song could not play.', error);
     }
   }
+}
 
   let playPuaseLabel = 'PLAY';
 
@@ -42,6 +70,15 @@ function App() {
     const selectedFile = selectedFiles[0];
     // Save the filename and ask React to update the interface.
     setTrackName(selectedFile.name);
+    /*
+    * createObjectURL gives the selected file a temporary address that an
+    * <audio> element can use. It only lasts for this application session.
+    */
+    const newAudioSource = URL.createObjectURL(selectedFile);
+
+    setAudioSource(newAudioSource);
+    // A newly selected track should begin in the paused state.
+    setIsPlaying(false);
   }
 
   return (
@@ -75,6 +112,13 @@ function App() {
 
       <h1>React is ready.</h1>
 
+      <audio
+        ref={audioPlayer}
+        className="audio-test-player"
+        src={audioSource}
+        controls
+       />
+
       <p id="status">One strange window. More strange things coming soon.</p>
       <input
         className="track-file-input"
@@ -82,6 +126,7 @@ function App() {
         accept="audio/*"
         onChange={handleTrackFileChange}
       />
+
       <p className="track-name">{trackName}</p>
     </main>
   );
