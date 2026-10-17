@@ -10,12 +10,12 @@ function handleMinimizeBtnClick() {
 }
 
 function App() {
-    /*
-    * A ref lets us access the real <audio> element so we can call its
-    * play() and pause() functions later.
-    */
+  /*
+   * A ref lets us access the real <audio> element so we can call its
+   * play() and pause() functions later.
+   */
   const audioPlayer = useRef<HTMLAudioElement | null>(null);
-  
+
   const [isPlaying, setIsPlaying] = useState(false);
   const [trackName, setTrackName] = useState('No track selected');
   const [audioSource, setAudioSource] = useState('');
@@ -24,35 +24,57 @@ function App() {
     const audioElement = audioPlayer.current;
 
     if (audioElement === null) {
-        return;
+      return;
     }
 
     if (audioSource === '') {
-        return;
+      return;
     }
 
-  if (isPlaying) {
-    audioElement.pause();
-    setIsPlaying(false);
-  } else {
-    try {
-      /*
-       * play() finishes asynchronously, so await waits for the browser
-       * to confirm that playback actually started.
-       */
-      await audioElement.play();
-      setIsPlaying(true);
-    } catch (error) {
-      // This helps us diagnose a file that cannot be played.
-      console.error('The selected song could not play.', error);
+    if (isPlaying) {
+      audioElement.pause();
+      setIsPlaying(false);
+    } else {
+      try {
+        /*
+         * play() finishes asynchronously, so await waits for the browser
+         * to confirm that playback actually started.
+         */
+        await audioElement.play();
+        setIsPlaying(true);
+      } catch (error) {
+        // This helps us diagnose a file that cannot be played.
+        console.error('The selected song could not play.', error);
+      }
     }
   }
-}
+
+  function handleAudioEnded() {
+    setIsPlaying(false);
+  }
 
   let playPuaseLabel = 'PLAY';
 
   if (isPlaying) {
     playPuaseLabel = 'PAUSE';
+  }
+
+  function handleStopBtnClick() {
+    // Get the real audio element from our ref.
+    const audioElement = audioPlayer.current;
+
+    if (audioElement === null) {
+      return;
+    }
+
+    // Stop playback.
+    audioElement.pause();
+
+    // Audio time is measured in seconds. Zero means the beginning.
+    audioElement.currentTime = 0;
+
+    // Update the React interface so the other button says PLAY.
+    setIsPlaying(false);
   }
 
   function handleTrackFileChange(event: ChangeEvent<HTMLInputElement>) {
@@ -71,9 +93,9 @@ function App() {
     // Save the filename and ask React to update the interface.
     setTrackName(selectedFile.name);
     /*
-    * createObjectURL gives the selected file a temporary address that an
-    * <audio> element can use. It only lasts for this application session.
-    */
+     * createObjectURL gives the selected file a temporary address that an
+     * <audio> element can use. It only lasts for this application session.
+     */
     const newAudioSource = URL.createObjectURL(selectedFile);
 
     setAudioSource(newAudioSource);
@@ -108,18 +130,24 @@ function App() {
       >
         {playPuaseLabel}
       </button>
-      <p className="eyebrow">DRAINAMP // STEP 02</p>
 
-      <h1>React is ready.</h1>
+      <button
+        className="play-pause-btn"
+        type="button"
+        onClick={handleStopBtnClick}
+      >
+        STOP
+      </button>
+      <p className="eyebrow">DRAINAMP // STEP 02</p>
 
       <audio
         ref={audioPlayer}
         className="audio-test-player"
         src={audioSource}
-        controls
-       />
+        onEnded={handleAudioEnded}
+      />
 
-      <p id="status">One strange window. More strange things coming soon.</p>
+      <p id="status"> window </p>
       <input
         className="track-file-input"
         type="file"
