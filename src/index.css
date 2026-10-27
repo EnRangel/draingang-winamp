@@ -28,7 +28,7 @@ body {
 
   width: 520px;
   height: 520px;
-  padding: 6rem;
+  padding: 5rem 6rem;
 
   display: grid;
   place-content: center;
@@ -82,8 +82,9 @@ h1 {
 }
 
 #status {
-  margin-bottom: 0;
+  margin: 0.35rem 0 0;
   color: #a9b4bd;
+  font-size: 0.7rem;
 }
 
 .window-minimize-btn {
@@ -136,41 +137,67 @@ h1 {
   background: #ff334d;
 }
 
-.play-pause-btn {
+.player-button,
+.mode-button,
+.playlist-action {
   margin: 0;
-  padding: 0.55rem 0.75rem;
   border: 1px solid #9edcff;
 
   color: #eef7ff;
   background: #101b22;
   font: inherit;
-  letter-spacing: 0.1em;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
   cursor: pointer;
 
   /* Buttons must be excluded from the window's drag area. */
   -webkit-app-region: no-drag;
 }
 
-.play-pause-btn:hover {
+.player-button:hover,
+.mode-button:hover,
+.playlist-action:hover {
   color: #090a0c;
   background: #9edcff;
 }
 
-.play-pause-btn:disabled {
+.player-button:disabled,
+.playlist-action:disabled {
   color: #59636b;
   background: #090c0f;
   border-color: #35434d;
   cursor: not-allowed;
 }
 
+.player-button {
+  padding: 0.4rem 0.45rem;
+}
+
 .playback-controls {
   width: 280px;
 
   display: flex;
-  flex-wrap: wrap;
   justify-content: center;
-  gap: 0.5rem;
-  margin-top: 0.6rem;
+  gap: 0.3rem;
+  margin-top: 0.4rem;
+}
+
+.mode-controls {
+  width: 280px;
+  margin-top: 0.35rem;
+
+  display: flex;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.mode-button {
+  padding: 0.3rem 0.6rem;
+}
+
+.mode-button[aria-pressed='true'] {
+  color: #090a0c;
+  background: #9edcff;
 }
 
 .track-name {
@@ -184,7 +211,7 @@ h1 {
 }
 
 .track-time {
-  margin: 0.65rem 0 0.25rem;
+  margin: 0.4rem 0 0.15rem;
 
   color: #9edcff;
   font-size: 1.5rem;
@@ -201,7 +228,7 @@ h1 {
 
 .volume-control {
   width: 280px;
-  margin-top: 0.65rem;
+  margin-top: 0.4rem;
 
   display: grid;
   grid-template-columns: 75px 1fr;
@@ -219,21 +246,54 @@ h1 {
   -webkit-app-region: no-drag;
 }
 
-.track-file-input {
-  max-width: 260px;
-  margin: 0 0 0.5rem;
+.drop-zone {
+  width: 280px;
+  margin-bottom: 0.35rem;
+  padding: 0.35rem;
+  border: 1px dashed #59636b;
 
   color: #a9b4bd;
-  font: inherit;
+  background: #080c0f;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
 
-  /* The user must be able to click this instead of dragging the window. */
+  /* This region accepts files instead of dragging the Electron window. */
   -webkit-app-region: no-drag;
+}
+
+.drop-zone-active {
+  color: #090a0c;
+  background: #9edcff;
+  border-color: #eef7ff;
+}
+
+.playlist-actions {
+  width: 280px;
+  margin-bottom: 0.35rem;
+
+  display: flex;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+.playlist-action {
+  padding: 0.35rem 0.6rem;
+}
+
+label.playlist-action {
+  display: inline-flex;
+  align-items: center;
+}
+
+.track-file-input {
+  /* The visible ADD label opens this hidden native file input. */
+  display: none;
 }
 
 .playlist {
   width: 280px;
-  max-height: 72px;
-  margin: 0 0 0.5rem;
+  max-height: 58px;
+  margin: 0 0 0.35rem;
   padding: 0;
   overflow-y: auto;
 
