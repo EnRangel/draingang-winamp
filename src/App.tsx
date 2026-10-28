@@ -6,122 +6,23 @@ import {
   type DragEvent,
 } from 'react';
 
-import AudioVisualizer from './AudioVisualizer';
+import {
+  applyEqualizerGains,
+  closeAudioEngine,
+  ensureAudioEngine,
+  type AudioEngine,
+} from './audioEngine';
 import { createTrackFromFile, type Track } from './audioMetadata';
-
-// RepeatMode only allows these three exact string values.
-type RepeatMode = 'off' | 'all' | 'one';
-
-function handleCloseBtnClick() {
-  window.electronAPI.closeWindow();
-}
-
-function handleMinimizeBtnClick() {
-  window.electronAPI.minimizeWindow();
-}
-
-// Convert a number of seconds into the clock format used by music players.
-function formatTime(timeInSeconds: number): string {
-  if (Number.isFinite(timeInSeconds) === false) {
-    return '0:00';
-  }
-
-  const wholeSeconds = Math.floor(timeInSeconds);
-  const minutes = Math.floor(wholeSeconds / 60);
-  const seconds = wholeSeconds % 60;
-  const paddedSeconds = seconds.toString().padStart(2, '0');
-
-  return minutes + ':' + paddedSeconds;
-}
-
-function loadSavedVolume(): number {
-  const savedVolume = localStorage.getItem('drainamp-volume');
-
-  if (savedVolume === null) {
-    return 100;
-  }
-
-  const parsedVolume = Number(savedVolume);
-
-  if (Number.isFinite(parsedVolume) === false) {
-    return 100;
-  }
-
-  if (parsedVolume < 0 || parsedVolume > 100) {
-    return 100;
-  }
-
-  return parsedVolume;
-}
-
-function loadSavedBoolean(settingName: string): boolean {
-  return localStorage.getItem(settingName) === 'true';
-}
-
-function loadSavedEqualizerGain(settingName: string): number {
-  const savedGain = localStorage.getItem(settingName);
-
-  if (savedGain === null) {
-    return 0;
-  }
-
-  const parsedGain = Number(savedGain);
-
-  if (Number.isFinite(parsedGain) === false) {
-    return 0;
-  }
-
-  if (parsedGain < -12 || parsedGain > 12) {
-    return 0;
-  }
-
-  return parsedGain;
-}
-
-function loadSavedRepeatMode(): RepeatMode {
-  const savedMode = localStorage.getItem('drainamp-repeat');
-
-  if (savedMode === 'all' || savedMode === 'one') {
-    return savedMode;
-  }
-
-  return 'off';
-}
-
-function isSupportedAudioFile(file: File): boolean {
-  if (file.type.startsWith('audio/')) {
-    return true;
-  }
-
-  // Some dragged Windows files do not include a MIME type, so check names too.
-  const lowercaseName = file.name.toLowerCase();
-
-  if (lowercaseName.endsWith('.mp3')) {
-    return true;
-  }
-
-  if (lowercaseName.endsWith('.wav')) {
-    return true;
-  }
-
-  if (lowercaseName.endsWith('.ogg')) {
-    return true;
-  }
-
-  if (lowercaseName.endsWith('.m4a')) {
-    return true;
-  }
-
-  return lowercaseName.endsWith('.flac');
-}
+import EqualizerPanel from './components/EqualizerPanel';
+import NowPlayingPanel from './components/NowPlayingPanel';
+import PlaylistPanel from './components/PlaylistPanel';
+import WindowControls from './components/WindowControls';
+import { usePlayerSettings } from './hooks/usePlayerSettings';
+import { isSupportedAudioFile } from './playerUtils';
 
 function App() {
   const audioPlayer = useRef<HTMLAudioElement | null>(null);
-  const audioContext = useRef<AudioContext | null>(null);
-  const mediaElementSource = useRef<MediaElementAudioSourceNode | null>(null);
-  const bassFilter = useRef<BiquadFilterNode | null>(null);
-  const midFilter = useRef<BiquadFilterNode | null>(null);
-  const trebleFilter = useRef<BiquadFilterNode | null>(null);
+  const audioEngine = useRef<AudioEngine | null>(null);
 
   /*
    * This ref remembers every temporary blob URL we create. Unlike state,
@@ -137,34 +38,34 @@ function App() {
   const [audioSource, setAudioSource] = useState('');
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [volume, setVolume] = useState(loadSavedVolume);
-  const [isMuted, setIsMuted] = useState(() =>
-    loadSavedBoolean('drainamp-muted'),
-  );
   const [playlist, setPlaylist] = useState<Track[]>([]);
   // -1 means that the playlist does not have a selected track yet.
   const [currentTrackIndex, setCurrentTrackIndex] = useState(-1);
   const [playWhenReady, setPlayWhenReady] = useState(false);
-  const [isShuffleEnabled, setIsShuffleEnabled] = useState(() =>
-    loadSavedBoolean('drainamp-shuffle'),
-  );
-  const [repeatMode, setRepeatMode] = useState<RepeatMode>(loadSavedRepeatMode);
   const [isDraggingFile, setIsDraggingFile] = useState(false);
   const [isAddingTracks, setIsAddingTracks] = useState(false);
   const [analyserNode, setAnalyserNode] = useState<AnalyserNode | null>(null);
-  const [bassGain, setBassGain] = useState(() =>
-    loadSavedEqualizerGain('drainamp-eq-bass'),
-  );
-  const [midGain, setMidGain] = useState(() =>
-    loadSavedEqualizerGain('drainamp-eq-mid'),
-  );
-  const [trebleGain, setTrebleGain] = useState(() =>
-    loadSavedEqualizerGain('drainamp-eq-treble'),
-  );
+
+  const {
+    volume,
+    setVolume,
+    isMuted,
+    setIsMuted,
+    isShuffleEnabled,
+    setIsShuffleEnabled,
+    repeatMode,
+    setRepeatMode,
+    bassGain,
+    setBassGain,
+    midGain,
+    setMidGain,
+    trebleGain,
+    setTrebleGain,
+  } = usePlayerSettings();
 
   /*
    * An effect runs after React updates the page. This one keeps the real audio
-   * element and localStorage synchronized with our settings state.
+   * element and Web Audio filters synchronized with our settings state.
    */
   useEffect(() => {
     const audioElement = audioPlayer.current;
@@ -174,34 +75,16 @@ function App() {
       audioElement.muted = isMuted;
     }
 
-    if (bassFilter.current !== null) {
-      bassFilter.current.gain.value = bassGain;
-    }
+    const engine = audioEngine.current;
 
-    if (midFilter.current !== null) {
-      midFilter.current.gain.value = midGain;
+    if (engine !== null) {
+      applyEqualizerGains(engine, {
+        bass: bassGain,
+        mid: midGain,
+        treble: trebleGain,
+      });
     }
-
-    if (trebleFilter.current !== null) {
-      trebleFilter.current.gain.value = trebleGain;
-    }
-
-    localStorage.setItem('drainamp-volume', String(volume));
-    localStorage.setItem('drainamp-muted', String(isMuted));
-    localStorage.setItem('drainamp-shuffle', String(isShuffleEnabled));
-    localStorage.setItem('drainamp-repeat', repeatMode);
-    localStorage.setItem('drainamp-eq-bass', String(bassGain));
-    localStorage.setItem('drainamp-eq-mid', String(midGain));
-    localStorage.setItem('drainamp-eq-treble', String(trebleGain));
-  }, [
-    volume,
-    isMuted,
-    isShuffleEnabled,
-    repeatMode,
-    bassGain,
-    midGain,
-    trebleGain,
-  ]);
+  }, [volume, isMuted, bassGain, midGain, trebleGain]);
 
   /*
    * Returning a function from an effect creates cleanup work. React runs this
@@ -215,13 +98,9 @@ function App() {
 
       createdTrackSources.current = [];
 
-      const context = audioContext.current;
-
-      if (context !== null && context.state !== 'closed') {
-        context.close().catch((error: unknown) => {
-          console.error('Could not close the audio engine.', error);
-        });
-      }
+      closeAudioEngine(audioEngine.current).catch((error: unknown) => {
+        console.error('Could not close the audio engine.', error);
+      });
     };
   }, []);
 
@@ -294,52 +173,14 @@ function App() {
       return;
     }
 
-    let context = audioContext.current;
+    const engine = await ensureAudioEngine(audioElement, audioEngine.current, {
+      bass: bassGain,
+      mid: midGain,
+      treble: trebleGain,
+    });
 
-    if (context === null) {
-      context = new AudioContext();
-
-      const sourceNode = context.createMediaElementSource(audioElement);
-      const newBassFilter = context.createBiquadFilter();
-      const newMidFilter = context.createBiquadFilter();
-      const newTrebleFilter = context.createBiquadFilter();
-      const newAnalyser = context.createAnalyser();
-
-      newBassFilter.type = 'lowshelf';
-      newBassFilter.frequency.value = 220;
-      newBassFilter.gain.value = bassGain;
-
-      newMidFilter.type = 'peaking';
-      newMidFilter.frequency.value = 1000;
-      newMidFilter.Q.value = 1;
-      newMidFilter.gain.value = midGain;
-
-      newTrebleFilter.type = 'highshelf';
-      newTrebleFilter.frequency.value = 4500;
-      newTrebleFilter.gain.value = trebleGain;
-
-      newAnalyser.fftSize = 128;
-      newAnalyser.smoothingTimeConstant = 0.82;
-
-      // Audio travels through each filter and analyser before the speakers.
-      sourceNode.connect(newBassFilter);
-      newBassFilter.connect(newMidFilter);
-      newMidFilter.connect(newTrebleFilter);
-      newTrebleFilter.connect(newAnalyser);
-      newAnalyser.connect(context.destination);
-
-      audioContext.current = context;
-      mediaElementSource.current = sourceNode;
-      bassFilter.current = newBassFilter;
-      midFilter.current = newMidFilter;
-      trebleFilter.current = newTrebleFilter;
-      setAnalyserNode(newAnalyser);
-    }
-
-    // Browsers begin audio contexts suspended until the user presses play.
-    if (context.state === 'suspended') {
-      await context.resume();
-    }
+    audioEngine.current = engine;
+    setAnalyserNode(engine.analyser);
   }
 
   async function replayCurrentTrack() {
@@ -739,60 +580,9 @@ function App() {
     }
   }
 
-  let playPauseLabel = 'PLAY';
-  if (isPlaying) {
-    playPauseLabel = 'PAUSE';
-  }
-
-  let muteButtonLabel = 'MUTE';
-  if (isMuted) {
-    muteButtonLabel = 'UNMUTE';
-  }
-
-  let shuffleButtonLabel = 'SHUF OFF';
-  if (isShuffleEnabled) {
-    shuffleButtonLabel = 'SHUF ON';
-  }
-
-  let repeatButtonLabel = 'REP OFF';
-  if (repeatMode === 'all') {
-    repeatButtonLabel = 'REP ALL';
-  } else if (repeatMode === 'one') {
-    repeatButtonLabel = 'REP ONE';
-  }
-
-  let dropZoneClassName = 'drop-zone';
-  if (isDraggingFile) {
-    dropZoneClassName += ' drop-zone-active';
-  }
-
-  let playPauseIcon = '▶';
-  if (isPlaying) {
-    playPauseIcon = 'Ⅱ';
-  }
-
-  let muteIcon = '◇';
-  if (isMuted) {
-    muteIcon = '◆';
-  }
-
   let playerStatus = String(playlist.length) + ' TRACKS';
   if (isAddingTracks) {
     playerStatus = 'READING SIGNALS...';
-  }
-
-  let artworkContent = (
-    <div className="fallback-artwork" aria-label="Drainamp fallback artwork">
-      <span className="sigil-wing sigil-wing-left">D</span>
-      <span className="sigil-core">✦</span>
-      <span className="sigil-wing sigil-wing-right">G</span>
-    </div>
-  );
-
-  if (artworkSource !== '') {
-    artworkContent = (
-      <img className="album-artwork" src={artworkSource} alt="Album artwork" />
-    );
   }
 
   return (
@@ -800,23 +590,7 @@ function App() {
       <div className="skin-glow skin-glow-blue" />
       <div className="skin-glow skin-glow-red" />
 
-      <button
-        className="window-minimize-btn"
-        type="button"
-        aria-label="Minimize Drainamp"
-        onClick={handleMinimizeBtnClick}
-      >
-        −
-      </button>
-
-      <button
-        className="window-close-btn"
-        type="button"
-        aria-label="Close Drainamp"
-        onClick={handleCloseBtnClick}
-      >
-        ×
-      </button>
+      <WindowControls />
 
       <header className="skin-header">
         <div>
@@ -826,251 +600,56 @@ function App() {
         <p className="player-status">{playerStatus}</p>
       </header>
 
-      <section className="now-playing-panel">
-        <div className="visual-column">
-          <div className="artwork-frame">
-            {artworkContent}
-            <span className="artwork-scan-line" />
-            <span className="artwork-corner artwork-corner-top" />
-            <span className="artwork-corner artwork-corner-bottom" />
-          </div>
+      <NowPlayingPanel
+        artworkSource={artworkSource}
+        analyser={analyserNode}
+        trackName={trackName}
+        trackArtist={trackArtist}
+        trackAlbum={trackAlbum}
+        currentTime={currentTime}
+        duration={duration}
+        isPlaying={isPlaying}
+        isMuted={isMuted}
+        isShuffleEnabled={isShuffleEnabled}
+        repeatMode={repeatMode}
+        volume={volume}
+        hasPreviousTrack={hasPreviousTrack}
+        hasNextTrack={hasNextTrack}
+        onSeekChange={handleSeekChange}
+        onPrevious={handlePreviousBtnClick}
+        onPlayPause={handlePlayPauseBtnClick}
+        onStop={handleStopBtnClick}
+        onNext={handleNextBtnClick}
+        onMute={handleMuteBtnClick}
+        onShuffle={handleShuffleBtnClick}
+        onRepeat={handleRepeatBtnClick}
+        onVolumeChange={handleVolumeChange}
+      />
 
-          <AudioVisualizer analyser={analyserNode} />
-        </div>
+      <EqualizerPanel
+        bassGain={bassGain}
+        midGain={midGain}
+        trebleGain={trebleGain}
+        onBassChange={handleBassGainChange}
+        onMidChange={handleMidGainChange}
+        onTrebleChange={handleTrebleGainChange}
+        onReset={handleResetEqualizerBtnClick}
+      />
 
-        <div className="control-column">
-          <div className="track-details">
-            <p className="track-name">{trackName}</p>
-            <p className="track-artist">{trackArtist}</p>
-            <p className="track-album">{trackAlbum}</p>
-          </div>
-
-          <p className="track-time">
-            {formatTime(currentTime)} / {formatTime(duration)}
-          </p>
-
-          <input
-            className="seek-bar"
-            type="range"
-            min="0"
-            max={duration}
-            step="1"
-            value={currentTime}
-            aria-label="Song position"
-            onChange={handleSeekChange}
-          />
-
-          <div className="playback-controls">
-            <button
-              className="transport-button"
-              type="button"
-              aria-label="Previous track"
-              title="Previous track"
-              disabled={hasPreviousTrack === false}
-              onClick={handlePreviousBtnClick}
-            >
-              |◀
-            </button>
-
-            <button
-              className="transport-button transport-button-primary"
-              type="button"
-              aria-label={playPauseLabel}
-              title={playPauseLabel}
-              onClick={handlePlayPauseBtnClick}
-            >
-              {playPauseIcon}
-            </button>
-
-            <button
-              className="transport-button"
-              type="button"
-              aria-label="Stop"
-              title="Stop"
-              onClick={handleStopBtnClick}
-            >
-              ■
-            </button>
-
-            <button
-              className="transport-button"
-              type="button"
-              aria-label="Next track"
-              title="Next track"
-              disabled={hasNextTrack === false}
-              onClick={handleNextBtnClick}
-            >
-              ▶|
-            </button>
-
-            <button
-              className="transport-button"
-              type="button"
-              aria-label={muteButtonLabel}
-              title={muteButtonLabel}
-              aria-pressed={isMuted}
-              onClick={handleMuteBtnClick}
-            >
-              {muteIcon}
-            </button>
-          </div>
-
-          <div className="mode-controls">
-            <button
-              className="mode-button"
-              type="button"
-              aria-pressed={isShuffleEnabled}
-              onClick={handleShuffleBtnClick}
-            >
-              {shuffleButtonLabel}
-            </button>
-
-            <button
-              className="mode-button"
-              type="button"
-              onClick={handleRepeatBtnClick}
-            >
-              {repeatButtonLabel}
-            </button>
-          </div>
-
-          <label className="volume-control">
-            <span>VOL {volume}</span>
-            <input
-              className="volume-slider"
-              type="range"
-              min="0"
-              max="100"
-              step="1"
-              value={volume}
-              onChange={handleVolumeChange}
-            />
-          </label>
-        </div>
-      </section>
-
-      <section className="equalizer-panel">
-        <div className="panel-heading">
-          <span>EQUALIZER // ±12 dB</span>
-          <button
-            className="tiny-button"
-            type="button"
-            onClick={handleResetEqualizerBtnClick}
-          >
-            RESET
-          </button>
-        </div>
-
-        <div className="equalizer-bands">
-          <label className="equalizer-band">
-            <span>BASS {bassGain}</span>
-            <input
-              type="range"
-              min="-12"
-              max="12"
-              step="1"
-              value={bassGain}
-              onChange={handleBassGainChange}
-            />
-          </label>
-
-          <label className="equalizer-band">
-            <span>MID {midGain}</span>
-            <input
-              type="range"
-              min="-12"
-              max="12"
-              step="1"
-              value={midGain}
-              onChange={handleMidGainChange}
-            />
-          </label>
-
-          <label className="equalizer-band">
-            <span>TREBLE {trebleGain}</span>
-            <input
-              type="range"
-              min="-12"
-              max="12"
-              step="1"
-              value={trebleGain}
-              onChange={handleTrebleGainChange}
-            />
-          </label>
-        </div>
-      </section>
-
-      <section className="playlist-panel">
-        <div className="panel-heading">
-          <span>PLAYLIST // {playlist.length}</span>
-
-          <div className="playlist-actions">
-            <label className="playlist-action">
-              ADD
-              <input
-                className="track-file-input"
-                type="file"
-                accept="audio/*"
-                multiple
-                onChange={handleTrackFileChange}
-              />
-            </label>
-
-            <button
-              className="playlist-action"
-              type="button"
-              disabled={currentTrackIndex === -1}
-              onClick={handleRemoveTrackBtnClick}
-            >
-              REMOVE
-            </button>
-
-            <button
-              className="playlist-action"
-              type="button"
-              disabled={playlist.length === 0}
-              onClick={handleClearPlaylistBtnClick}
-            >
-              CLEAR
-            </button>
-          </div>
-        </div>
-
-        <div
-          className={dropZoneClassName}
-          onDragEnter={handleDragEnter}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-        >
-          DROP AUDIO SIGNALS HERE
-        </div>
-
-        <ol className="playlist">
-          {playlist.map((track, trackIndex) => {
-            let trackButtonClassName = 'playlist-track';
-
-            if (trackIndex === currentTrackIndex) {
-              trackButtonClassName += ' playlist-track-active';
-            }
-
-            return (
-              <li key={track.source}>
-                <button
-                  className={trackButtonClassName}
-                  type="button"
-                  title={track.fileName}
-                  onClick={() => handlePlaylistTrackClick(trackIndex)}
-                >
-                  <span>{trackIndex + 1}.</span>
-                  <span>{track.title}</span>
-                  <span>{track.artist}</span>
-                </button>
-              </li>
-            );
-          })}
-        </ol>
-      </section>
+      <PlaylistPanel
+        playlist={playlist}
+        currentTrackIndex={currentTrackIndex}
+        isDraggingFile={isDraggingFile}
+        isAddingTracks={isAddingTracks}
+        onFileChange={handleTrackFileChange}
+        onRemove={handleRemoveTrackBtnClick}
+        onClear={handleClearPlaylistBtnClick}
+        onTrackClick={handlePlaylistTrackClick}
+        onDragEnter={handleDragEnter}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+      />
 
       <audio
         ref={audioPlayer}
