@@ -1,5 +1,7 @@
+import type { RepeatMode } from './playerTypes';
+
 export function formatTime(timeInSeconds: number): string {
-  if (Number.isFinite(timeInSeconds) === false) {
+  if (Number.isFinite(timeInSeconds) === false || timeInSeconds < 0) {
     return '0:00';
   }
 
@@ -36,4 +38,44 @@ export function isSupportedAudioFile(file: File): boolean {
   }
 
   return lowercaseName.endsWith('.flac');
+}
+
+export function findNextTrackIndex(
+  playlistLength: number,
+  currentTrackIndex: number,
+  isAutomaticAdvance: boolean,
+  repeatMode: RepeatMode,
+  isShuffleEnabled: boolean,
+): number {
+  if (playlistLength === 0) {
+    return -1;
+  }
+
+  // Automatic means the current song ended by itself, rather than a click.
+  if (isAutomaticAdvance && repeatMode === 'one') {
+    return currentTrackIndex;
+  }
+
+  if (isShuffleEnabled && playlistLength > 1) {
+    /*
+     * Choose an offset instead of repeatedly choosing random tracks. Because
+     * the offset starts at 1, shuffle can never choose the current track.
+     */
+    const numberOfOtherTracks = playlistLength - 1;
+    const randomOffset = Math.floor(Math.random() * numberOfOtherTracks) + 1;
+
+    return (currentTrackIndex + randomOffset) % playlistLength;
+  }
+
+  const nextTrackIndex = currentTrackIndex + 1;
+
+  if (nextTrackIndex < playlistLength) {
+    return nextTrackIndex;
+  }
+
+  if (repeatMode === 'all') {
+    return 0;
+  }
+
+  return -1;
 }
