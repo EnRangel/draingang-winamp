@@ -19,8 +19,9 @@ if (started) {
 function createWindow(): void {
   // BrowserWindow is Electron's representation of a native desktop window.
   const mainWindow = new BrowserWindow({
-    width: 700,
-    height: 700,
+    // The transparent window is larger than the visible jagged player skin.
+    width: 820,
+    height: 760,
     resizable: false,
     frame: false,
     transparent: true,
