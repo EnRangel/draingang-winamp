@@ -18,7 +18,7 @@ import NowPlayingPanel from './components/NowPlayingPanel';
 import PlaylistPanel from './components/PlaylistPanel';
 import WindowControls from './components/WindowControls';
 import { usePlayerSettings } from './hooks/usePlayerSettings';
-import { isSupportedAudioFile } from './playerUtils';
+import { findNextTrackIndex, isSupportedAudioFile } from './playerUtils';
 
 function App() {
   const audioPlayer = useRef<HTMLAudioElement | null>(null);
@@ -202,39 +202,6 @@ function App() {
     }
   }
 
-  function findNextTrackIndex(isAutomaticAdvance: boolean): number {
-    if (playlist.length === 0) {
-      return -1;
-    }
-
-    if (isAutomaticAdvance && repeatMode === 'one') {
-      return currentTrackIndex;
-    }
-
-    if (isShuffleEnabled && playlist.length > 1) {
-      let randomIndex = currentTrackIndex;
-
-      // Keep choosing until shuffle finds a different song.
-      while (randomIndex === currentTrackIndex) {
-        randomIndex = Math.floor(Math.random() * playlist.length);
-      }
-
-      return randomIndex;
-    }
-
-    const nextTrackIndex = currentTrackIndex + 1;
-
-    if (nextTrackIndex < playlist.length) {
-      return nextTrackIndex;
-    }
-
-    if (repeatMode === 'all') {
-      return 0;
-    }
-
-    return -1;
-  }
-
   async function handlePlayPauseBtnClick() {
     const audioElement = audioPlayer.current;
 
@@ -259,7 +226,13 @@ function App() {
   }
 
   async function handleAudioEnded() {
-    const nextTrackIndex = findNextTrackIndex(true);
+    const nextTrackIndex = findNextTrackIndex(
+      playlist.length,
+      currentTrackIndex,
+      true,
+      repeatMode,
+      isShuffleEnabled,
+    );
 
     if (nextTrackIndex === -1) {
       setIsPlaying(false);
@@ -392,7 +365,13 @@ function App() {
   }
 
   function handleNextBtnClick() {
-    const nextTrackIndex = findNextTrackIndex(false);
+    const nextTrackIndex = findNextTrackIndex(
+      playlist.length,
+      currentTrackIndex,
+      false,
+      repeatMode,
+      isShuffleEnabled,
+    );
     const nextTrack = playlist[nextTrackIndex];
 
     if (nextTrack !== undefined) {
