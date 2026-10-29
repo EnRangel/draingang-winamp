@@ -874,35 +874,52 @@ input {
   letter-spacing: 0.08em;
 }
 
-/* The three title strips use the same worn silver as the buttons. */
+/* The supplied bitmap gives all three title strips real scratched metal. */
 .skin-header,
 .panel-heading {
   border-color: #d4d4cd;
   border-style: outset;
-  background-color: #858681;
+  background-color: #aaa9a4;
   background-image:
-    radial-gradient(circle at 18% 28%, rgb(0 0 0 / 30%) 0 1px, transparent 2px),
-    radial-gradient(
-      circle at 76% 68%,
-      rgb(255 255 255 / 20%) 0 1px,
-      transparent 2px
+    linear-gradient(
+      180deg,
+      rgb(255 255 255 / 26%),
+      transparent 38%,
+      rgb(0 0 0 / 24%)
     ),
-    repeating-linear-gradient(
-      103deg,
-      transparent 0 15px,
-      rgb(0 0 0 / 14%) 16px,
-      transparent 18px
-    ),
-    linear-gradient(#d1d1ca 0%, #777873 43%, #b9b9b3 52%, #5d5e5a 100%);
+    url('./assets/dirty-silver-strip.png');
   background-size:
-    17px 14px,
-    23px 19px,
-    auto,
-    auto;
+    100% 100%,
+    295px 100%;
+  background-position: center;
+  background-repeat: no-repeat, repeat-x;
   box-shadow:
     inset 1px 1px 0 rgb(255 255 255 / 42%),
     inset -1px -1px 0 rgb(0 0 0 / 55%),
     1px 1px 0 #090909;
+}
+
+/* The Equalizer gets its own dark streak, anchored toward the right side. */
+.equalizer-heading {
+  background-image:
+    url('./assets/equalizer-silver-streak.png'),
+    linear-gradient(
+      180deg,
+      rgb(255 255 255 / 20%),
+      transparent 40%,
+      rgb(0 0 0 / 20%)
+    ),
+    url('./assets/dirty-silver-strip.png');
+  background-size:
+    330px 100%,
+    100% 100%,
+    295px 100%;
+  background-position:
+    right center,
+    center,
+    center;
+  background-repeat: no-repeat, no-repeat, repeat-x;
+  background-blend-mode: multiply, normal, normal;
 }
 
 .panel-heading .tiny-button {
@@ -1115,6 +1132,17 @@ input {
 .playlist-heading {
   position: relative;
   overflow: hidden;
+  background-image:
+    linear-gradient(
+      180deg,
+      rgb(255 255 255 / 18%),
+      transparent 42%,
+      rgb(0 0 0 / 18%)
+    ),
+    url('./assets/broken-silver-strip.png');
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .playlist-title {
