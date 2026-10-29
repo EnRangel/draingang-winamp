@@ -94,7 +94,6 @@ function PlaylistPanel({
         <div className="playlist-side-art" aria-hidden="true">
           <span className="playlist-side-chain playlist-side-chain-right" />
           <span className="playlist-scratch">✧</span>
-          <div className="playlist-mascot" />
           <span className="playlist-heart">♥</span>
         </div>
       </div>

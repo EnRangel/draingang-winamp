@@ -27,14 +27,14 @@ input {
 
 .desktop-stage {
   position: relative;
-  width: 840px;
-  height: 560px;
+  width: 392px;
+  height: 493px;
 }
 
 .milestone {
   position: absolute;
-  top: 18px;
-  left: 18px;
+  top: 0;
+  left: 0;
   isolation: isolate;
 
   width: 700px;
@@ -137,116 +137,97 @@ input {
   background: rgb(255 20 54 / 24%);
 }
 
-.skin-spark {
-  position: absolute;
-  z-index: 4;
-
-  color: #fff;
-  font-size: 1.45rem;
-  text-shadow:
-    0 0 6px #fff,
-    0 0 12px currentcolor;
-  pointer-events: none;
-}
-
-.skin-spark-left {
-  top: 21px;
-  left: 15px;
-  color: #78d9ff;
-}
-
-.skin-spark-right {
-  right: 14px;
-  bottom: 22px;
-  color: #ff3152;
-}
-
 .edge-decorations {
   position: absolute;
   inset: 0;
-  z-index: 35;
+  z-index: 31;
   pointer-events: none;
 }
 
 .edge-star {
   position: absolute;
-  color: #f8f8f3;
-  font-family: Georgia, 'Times New Roman', serif;
-  line-height: 1;
-  text-shadow:
-    0 0 3px #fff,
-    0 0 8px currentcolor;
+
+  /* The polygon stretches one four-point star shape like the reference art. */
+  width: 28px;
+  height: 28px;
+  background: #d5d6d2;
+  clip-path: polygon(
+    50% 0%,
+    59% 40%,
+    100% 50%,
+    59% 60%,
+    50% 100%,
+    41% 60%,
+    0% 50%,
+    41% 40%
+  );
+  opacity: 0.14;
+  filter: drop-shadow(0 0 2px rgb(255 255 255 / 35%));
+  mix-blend-mode: screen;
 }
 
 .edge-star-one {
-  top: 53px;
-  left: 4px;
-  font-size: 2rem;
+  top: 78px;
+  left: 18px;
+  width: 31px;
+  height: 31px;
+  transform: rotate(-8deg);
 }
 
 .edge-star-two {
-  top: 138px;
-  left: 13px;
-  color: #9be4ff;
-  font-size: 1.4rem;
+  top: 168px;
+  right: 22px;
+  width: 23px;
+  height: 23px;
+  transform: rotate(7deg);
 }
 
 .edge-star-three {
-  top: 274px;
-  left: 1px;
-  font-size: 1.8rem;
+  top: 330px;
+  left: 16px;
+  width: 27px;
+  height: 27px;
+  transform: rotate(5deg);
 }
 
 .edge-star-four {
-  top: 90px;
-  right: 1px;
-  color: #ff2146;
-  font-size: 2.25rem;
+  top: 430px;
+  right: 18px;
+  width: 34px;
+  height: 34px;
+  transform: rotate(-6deg);
 }
 
 .edge-star-five {
-  top: 214px;
-  right: 12px;
-  font-size: 1.55rem;
+  top: 545px;
+  left: 16px;
+  width: 24px;
+  height: 24px;
+  transform: rotate(-5deg);
 }
 
 .edge-star-six {
-  right: 0;
-  bottom: 220px;
-  color: #9be4ff;
-  font-size: 1.7rem;
+  top: 650px;
+  right: 24px;
+  width: 29px;
+  height: 29px;
+  transform: rotate(8deg);
 }
 
 .edge-star-seven {
-  bottom: 58px;
-  left: 7px;
-  color: #ff2146;
-  font-size: 1.65rem;
+  bottom: 130px;
+  left: 34px;
+  width: 28px;
+  height: 28px;
+  transform: rotate(6deg);
 }
 
 .edge-star-eight {
-  right: 16px;
-  bottom: 4px;
-  font-size: 1.9rem;
-}
-
-.drain-baby {
-  position: absolute;
-  right: 55px;
-  bottom: 20px;
-  z-index: 45;
-
-  width: 430px;
-  height: 430px;
-  background: #f7f7f2;
-  pointer-events: none;
-  transform: rotate(-3deg);
-  mask-image: url('./assets/drain-baby.png');
-  mask-mode: luminance;
-  mask-repeat: no-repeat;
-  mask-position: center;
-  mask-size: contain;
-  filter: drop-shadow(0 0 2px #fff) drop-shadow(-3px 2px 0 rgb(0 0 0 / 80%));
+  right: 34px;
+  bottom: 42px;
+  width: 34px;
+  height: 34px;
+  transform: rotate(-7deg);
 }
 
 .window-controls {
@@ -380,7 +361,7 @@ input {
 .player-screen {
   min-height: 0;
   display: grid;
-  grid-template-columns: 218px minmax(0, 1fr);
+  grid-template-columns: 122px minmax(0, 1fr);
   gap: 7px;
 }
 
@@ -450,16 +431,8 @@ input {
   min-width: 0;
   padding: 6px;
   display: grid;
-  grid-template-columns: 94px minmax(0, 1fr);
-  gap: 6px;
+  grid-template-columns: minmax(0, 1fr);
   border: 1px solid #5b5b57;
-}
-
-.digital-display {
-  min-width: 0;
-  padding: 9px 3px;
-  border-left: 1px solid #363b3d;
-  background: #020405;
 }
 
 .artwork-frame {
@@ -483,44 +456,24 @@ input {
 
 .fallback-artwork {
   position: relative;
-  width: 112px;
-  height: 86px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #edf9ff;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
   filter: drop-shadow(0 0 8px rgb(91 204 255 / 65%));
   animation: sigil-pulse 2.8s ease-in-out infinite;
 }
 
-.sigil-wing {
-  position: absolute;
-  top: 20px;
-
-  width: 48px;
-  font-size: 2.8rem;
-  font-weight: 900;
-  font-style: italic;
-  line-height: 1;
-}
-
-.sigil-wing-left {
-  left: 5px;
-  color: #94e1ff;
-  transform: rotate(-18deg) skewY(12deg);
-}
-
-.sigil-wing-right {
-  right: 5px;
-  color: #ff3859;
-  transform: rotate(18deg) skewY(-12deg);
-}
-
-.sigil-core {
-  z-index: 2;
-  color: white;
-  font-size: 2.2rem;
+.fallback-drain-baby {
+  width: 90%;
+  height: 90%;
+  background: #f7f7f2;
+  mask-image: url('./assets/drain-baby.png');
+  mask-mode: luminance;
+  mask-position: center;
+  mask-repeat: no-repeat;
+  mask-size: 115%;
+  filter: drop-shadow(1px 1px 0 #111) drop-shadow(0 0 3px #fff);
 }
 
 .artwork-scan-line {
@@ -592,7 +545,9 @@ input {
 }
 
 .track-details {
+  position: relative;
   min-height: 0;
+  padding-right: 105px;
   padding-left: 0.55rem;
   overflow: hidden;
   border-left: 3px solid #b9eaff;
@@ -628,9 +583,12 @@ input {
 }
 
 .track-time {
+  position: absolute;
+  top: 4px;
+  right: 6px;
   margin: 0;
   color: #bcecff;
-  font-size: 1.4rem;
+  font-size: 0.76rem;
   letter-spacing: 0.04em;
   white-space: nowrap;
   text-shadow: 0 0 5px #3abdf5;
@@ -967,7 +925,7 @@ input {
   min-height: 0;
   padding: 5px;
   display: grid;
-  grid-template-columns: 130px 43px minmax(0, 1fr) 76px;
+  grid-template-columns: 43px minmax(0, 1fr) 58px;
   gap: 5px;
   overflow: hidden;
 
@@ -992,23 +950,6 @@ input {
   box-shadow:
     inset 0 0 18px #000,
     inset 0 0 0 1px #202323;
-}
-
-.equalizer-mascot,
-.equalizer-mini-mascot {
-  background: #f2f2ec;
-  mask-image: url('./assets/drain-baby.png');
-  mask-position: center;
-  mask-repeat: no-repeat;
-  mask-size: contain;
-  mask-mode: luminance;
-}
-
-.equalizer-mascot {
-  width: 100%;
-  height: 100%;
-  mask-size: 140%;
-  filter: drop-shadow(2px 0 0 #60605d);
 }
 
 .decibel-scale {
@@ -1098,14 +1039,6 @@ input {
   font-size: 1.2rem;
   transform: rotate(-8deg);
   text-shadow: 0 0 3px #fff;
-}
-
-.equalizer-mini-mascot {
-  position: absolute;
-  right: -2px;
-  bottom: -13px;
-  width: 73px;
-  height: 92px;
 }
 
 .playlist-panel {
@@ -1285,20 +1218,6 @@ label.playlist-action {
   font-size: 2.2rem;
   text-shadow: 0 0 7px #4cc5ff;
   transform: rotate(-18deg) scaleX(1.8);
-}
-
-.playlist-mascot {
-  position: absolute;
-  right: -6px;
-  bottom: -15px;
-  width: 78px;
-  height: 104px;
-  background: #f2f2ec;
-  mask-image: url('./assets/drain-baby.png');
-  mask-mode: luminance;
-  mask-position: center;
-  mask-repeat: no-repeat;
-  mask-size: 145%;
 }
 
 .playlist-heart {
