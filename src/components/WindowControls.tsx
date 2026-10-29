@@ -8,7 +8,8 @@ function WindowControls() {
   }
 
   return (
-    <>
+    // Grouping the buttons creates one reliable no-drag area in Electron.
+    <div className="window-controls" aria-label="Window controls">
       <button
         className="window-minimize-btn"
         type="button"
@@ -26,7 +27,7 @@ function WindowControls() {
       >
         ×
       </button>
-    </>
+    </div>
   );
 }
 

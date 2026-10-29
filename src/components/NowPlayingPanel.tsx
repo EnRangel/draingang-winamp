@@ -99,39 +99,51 @@ function NowPlayingPanel({
 
   return (
     <section className="now-playing-panel">
-      <div className="visual-column">
-        <div className="artwork-frame">
-          {artworkContent}
-          <span className="artwork-scan-line" />
-          <span className="artwork-corner artwork-corner-top" />
-          <span className="artwork-corner artwork-corner-bottom" />
+      <div className="player-screen">
+        <div className="visual-column">
+          <div className="artwork-frame">
+            {artworkContent}
+            <span className="artwork-scan-line" />
+            <span className="artwork-corner artwork-corner-top" />
+            <span className="artwork-corner artwork-corner-bottom" />
+          </div>
+
+          <div className="digital-display">
+            <p className="track-time">
+              {formatTime(currentTime)} / {formatTime(duration)}
+            </p>
+          </div>
         </div>
 
-        <AudioVisualizer analyser={analyser} />
+        <div className="control-column">
+          <div className="track-details">
+            <p className="track-name">{trackName}</p>
+            <p className="track-artist">{trackArtist}</p>
+            <p className="track-album">{trackAlbum}</p>
+          </div>
+
+          <AudioVisualizer analyser={analyser} />
+
+          <div className="signal-details" aria-hidden="true">
+            <span>LOCAL FILE</span>
+            <span>WEB AUDIO</span>
+            <span>STEREO</span>
+          </div>
+        </div>
       </div>
 
-      <div className="control-column">
-        <div className="track-details">
-          <p className="track-name">{trackName}</p>
-          <p className="track-artist">{trackArtist}</p>
-          <p className="track-album">{trackAlbum}</p>
-        </div>
+      <input
+        className="seek-bar"
+        type="range"
+        min="0"
+        max={duration}
+        step="1"
+        value={currentTime}
+        aria-label="Song position"
+        onChange={onSeekChange}
+      />
 
-        <p className="track-time">
-          {formatTime(currentTime)} / {formatTime(duration)}
-        </p>
-
-        <input
-          className="seek-bar"
-          type="range"
-          min="0"
-          max={duration}
-          step="1"
-          value={currentTime}
-          aria-label="Song position"
-          onChange={onSeekChange}
-        />
-
+      <div className="player-command-row">
         <div className="playback-controls">
           <button
             className="transport-button"

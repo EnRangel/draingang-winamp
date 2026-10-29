@@ -28,4 +28,9 @@ export const rules: Required<ModuleOptions>['rules'] = [
       },
     },
   },
+  {
+    // Webpack copies imported pictures into the built application for us.
+    test: /\.(png|jpe?g|webp)$/i,
+    type: 'asset/resource',
+  },
 ];
