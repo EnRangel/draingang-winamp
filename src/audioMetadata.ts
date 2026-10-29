@@ -8,7 +8,24 @@ export type Track = {
   album: string;
   source: string;
   artworkSource: string;
+  duration: string;
 };
+
+function formatDuration(durationInSeconds: number | undefined): string {
+  if (
+    durationInSeconds === undefined ||
+    Number.isFinite(durationInSeconds) === false
+  ) {
+    return '--:--';
+  }
+
+  const totalSeconds = Math.floor(durationInSeconds);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+
+  // padStart adds a leading zero, changing 7 seconds into "07".
+  return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+}
 
 function removeFileExtension(fileName: string): string {
   const lastDotPosition = fileName.lastIndexOf('.');
@@ -26,10 +43,12 @@ export async function createTrackFromFile(file: File): Promise<Track> {
   let artist = 'Unknown Artist';
   let album = 'Unknown Album';
   let artworkSource = '';
+  let duration = '--:--';
 
   try {
     // parseBlob reads metadata directly from the browser File object.
     const metadata = await parseBlob(file);
+    duration = formatDuration(metadata.format.duration);
 
     if (metadata.common.title !== undefined && metadata.common.title !== '') {
       title = metadata.common.title;
@@ -70,5 +89,6 @@ export async function createTrackFromFile(file: File): Promise<Track> {
     album,
     source: URL.createObjectURL(file),
     artworkSource,
+    duration,
   };
 }

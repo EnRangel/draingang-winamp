@@ -20,11 +20,11 @@ describe('EqualizerPanel', () => {
       />,
     );
 
-    expect(screen.getByText('BASS 4')).toBeInTheDocument();
-    expect(screen.getByText('MID 0')).toBeInTheDocument();
-    expect(screen.getByText('TREBLE -2')).toBeInTheDocument();
+    expect(screen.getAllByRole('slider')).toHaveLength(10);
+    expect(screen.getByText('60')).toBeInTheDocument();
+    expect(screen.getByText('16K')).toBeInTheDocument();
 
-    fireEvent.change(screen.getByRole('slider', { name: 'BASS 4' }), {
+    fireEvent.change(screen.getByRole('slider', { name: '60 Hz bass 4' }), {
       target: { value: '7' },
     });
 

@@ -13,6 +13,7 @@ const tracks: Track[] = [
     album: 'Test Album',
     source: 'blob:glass-wings',
     artworkSource: '',
+    duration: '4:21',
   },
   {
     fileName: 'empty-orbits.mp3',
@@ -21,6 +22,7 @@ const tracks: Track[] = [
     album: 'Test Album',
     source: 'blob:empty-orbits',
     artworkSource: '',
+    duration: '3:08',
   },
 ];
 
@@ -51,9 +53,10 @@ describe('PlaylistPanel', () => {
   it('renders playlist metadata and marks the active track', () => {
     renderPlaylist(tracks, 0);
 
-    expect(screen.getByText('PLAYLIST // 2')).toBeInTheDocument();
+    expect(screen.getByText('PLAYLIST')).toBeInTheDocument();
     expect(screen.getByText('Glass Wings')).toBeInTheDocument();
     expect(screen.getByText('Empty Orbits')).toBeInTheDocument();
+    expect(screen.getByText('4:21')).toBeInTheDocument();
     expect(screen.getByTitle('glass-wings.mp3')).toHaveClass(
       'playlist-track-active',
     );

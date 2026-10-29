@@ -565,80 +565,105 @@ function App() {
   }
 
   return (
-    <main className="milestone">
-      <div className="skin-glow skin-glow-blue" />
-      <div className="skin-glow skin-glow-red" />
-
-      <WindowControls />
-
-      <header className="skin-header">
-        <div>
-          <p className="eyebrow">COLD SIGNAL AUDIO // 03</p>
-          <h1>DRAINAMP</h1>
+    <main className="desktop-stage">
+      <section className="milestone">
+        <div className="skin-glow skin-glow-blue" />
+        <div className="skin-glow skin-glow-red" />
+        <div className="skin-spark skin-spark-left" aria-hidden="true">
+          ✦
         </div>
-        <p className="player-status">{playerStatus}</p>
-      </header>
+        <div className="skin-spark skin-spark-right" aria-hidden="true">
+          ✦
+        </div>
 
-      <NowPlayingPanel
-        artworkSource={artworkSource}
-        analyser={analyserNode}
-        trackName={trackName}
-        trackArtist={trackArtist}
-        trackAlbum={trackAlbum}
-        currentTime={currentTime}
-        duration={duration}
-        isPlaying={isPlaying}
-        isMuted={isMuted}
-        isShuffleEnabled={isShuffleEnabled}
-        repeatMode={repeatMode}
-        volume={volume}
-        hasPreviousTrack={hasPreviousTrack}
-        hasNextTrack={hasNextTrack}
-        onSeekChange={handleSeekChange}
-        onPrevious={handlePreviousBtnClick}
-        onPlayPause={handlePlayPauseBtnClick}
-        onStop={handleStopBtnClick}
-        onNext={handleNextBtnClick}
-        onMute={handleMuteBtnClick}
-        onShuffle={handleShuffleBtnClick}
-        onRepeat={handleRepeatBtnClick}
-        onVolumeChange={handleVolumeChange}
-      />
+        {/*
+         * This layer is only visual. aria-hidden keeps screen readers focused
+         * on the real player controls instead of announcing decorative stars.
+         */}
+        <div className="edge-decorations" aria-hidden="true">
+          <span className="edge-star edge-star-one">✦</span>
+          <span className="edge-star edge-star-two">✧</span>
+          <span className="edge-star edge-star-three">✦</span>
+          <span className="edge-star edge-star-four">✦</span>
+          <span className="edge-star edge-star-five">✧</span>
+          <span className="edge-star edge-star-six">✦</span>
+          <span className="edge-star edge-star-seven">✦</span>
+          <span className="edge-star edge-star-eight">✧</span>
+        </div>
 
-      <EqualizerPanel
-        bassGain={bassGain}
-        midGain={midGain}
-        trebleGain={trebleGain}
-        onBassChange={handleBassGainChange}
-        onMidChange={handleMidGainChange}
-        onTrebleChange={handleTrebleGainChange}
-        onReset={handleResetEqualizerBtnClick}
-      />
+        <WindowControls />
 
-      <PlaylistPanel
-        playlist={playlist}
-        currentTrackIndex={currentTrackIndex}
-        isDraggingFile={isDraggingFile}
-        isAddingTracks={isAddingTracks}
-        onFileChange={handleTrackFileChange}
-        onRemove={handleRemoveTrackBtnClick}
-        onClear={handleClearPlaylistBtnClick}
-        onTrackClick={handlePlaylistTrackClick}
-        onDragEnter={handleDragEnter}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-      />
+        <header className="skin-header">
+          <div>
+            <p className="eyebrow">DG AUDIO SYSTEM // 03</p>
+            <h1>DRAINAMP</h1>
+          </div>
+          <p className="player-status">{playerStatus}</p>
+        </header>
 
-      <audio
-        ref={audioPlayer}
-        className="audio-test-player"
-        src={audioSource}
-        onCanPlay={handleAudioCanPlay}
-        onEnded={handleAudioEnded}
-        onLoadedMetadata={handleAudioLoadedMetadata}
-        onTimeUpdate={handleAudioTimeUpdate}
-      />
+        <NowPlayingPanel
+          artworkSource={artworkSource}
+          analyser={analyserNode}
+          trackName={trackName}
+          trackArtist={trackArtist}
+          trackAlbum={trackAlbum}
+          currentTime={currentTime}
+          duration={duration}
+          isPlaying={isPlaying}
+          isMuted={isMuted}
+          isShuffleEnabled={isShuffleEnabled}
+          repeatMode={repeatMode}
+          volume={volume}
+          hasPreviousTrack={hasPreviousTrack}
+          hasNextTrack={hasNextTrack}
+          onSeekChange={handleSeekChange}
+          onPrevious={handlePreviousBtnClick}
+          onPlayPause={handlePlayPauseBtnClick}
+          onStop={handleStopBtnClick}
+          onNext={handleNextBtnClick}
+          onMute={handleMuteBtnClick}
+          onShuffle={handleShuffleBtnClick}
+          onRepeat={handleRepeatBtnClick}
+          onVolumeChange={handleVolumeChange}
+        />
+
+        <EqualizerPanel
+          bassGain={bassGain}
+          midGain={midGain}
+          trebleGain={trebleGain}
+          onBassChange={handleBassGainChange}
+          onMidChange={handleMidGainChange}
+          onTrebleChange={handleTrebleGainChange}
+          onReset={handleResetEqualizerBtnClick}
+        />
+
+        <PlaylistPanel
+          playlist={playlist}
+          currentTrackIndex={currentTrackIndex}
+          isDraggingFile={isDraggingFile}
+          isAddingTracks={isAddingTracks}
+          onFileChange={handleTrackFileChange}
+          onRemove={handleRemoveTrackBtnClick}
+          onClear={handleClearPlaylistBtnClick}
+          onTrackClick={handlePlaylistTrackClick}
+          onDragEnter={handleDragEnter}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+        />
+
+        <audio
+          ref={audioPlayer}
+          className="audio-test-player"
+          src={audioSource}
+          onCanPlay={handleAudioCanPlay}
+          onEnded={handleAudioEnded}
+          onLoadedMetadata={handleAudioLoadedMetadata}
+          onTimeUpdate={handleAudioTimeUpdate}
+        />
+      </section>
+
+      <div className="drain-baby" aria-hidden="true" />
     </main>
   );
 }
