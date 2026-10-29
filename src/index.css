@@ -649,15 +649,51 @@ input {
 .seek-bar,
 .volume-slider,
 .equalizer-fader input {
-  accent-color: #76d6ff;
+  appearance: none;
+  background: transparent;
   cursor: pointer;
   -webkit-app-region: no-drag;
 }
 
 .seek-bar {
   width: 100%;
-  height: 18px;
+  height: 22px;
   margin: 0;
+}
+
+/* Chromium calls the horizontal slider bar its "runnable track." */
+.seek-bar::-webkit-slider-runnable-track,
+.volume-slider::-webkit-slider-runnable-track {
+  height: 10px;
+  border: 2px inset #8c8d88;
+  background: linear-gradient(#0b0f11 0 22%, #6bc9ed 25% 72%, #13232a 75% 100%);
+  box-shadow:
+    inset 0 1px 2px #000,
+    0 1px 0 rgb(255 255 255 / 25%);
+}
+
+/* The thumb is the shiny silver block the user drags. */
+.seek-bar::-webkit-slider-thumb,
+.volume-slider::-webkit-slider-thumb {
+  width: 13px;
+  height: 13px;
+  margin-top: -4px;
+  border: 2px outset #e2e2dc;
+  border-radius: 0;
+  appearance: none;
+  background:
+    radial-gradient(circle at 25% 28%, #fff 0 1px, transparent 2px),
+    repeating-linear-gradient(
+      105deg,
+      transparent 0 6px,
+      rgb(0 0 0 / 16%) 7px,
+      transparent 9px
+    ),
+    linear-gradient(135deg, #f1f1eb, #858681 45%, #d2d2cc 55%, #565753);
+  box-shadow:
+    inset 1px 1px 0 rgb(255 255 255 / 70%),
+    inset -2px -2px 0 rgb(0 0 0 / 45%),
+    0 1px 2px #000;
 }
 
 .player-command-row {
@@ -815,7 +851,7 @@ input {
 
 .volume-slider {
   width: 100%;
-  height: 13px;
+  height: 20px;
 }
 
 .equalizer-panel {
@@ -858,6 +894,37 @@ input {
   font-size: 0.63rem;
   font-weight: 900;
   letter-spacing: 0.08em;
+}
+
+/* The three title strips use the same worn silver as the buttons. */
+.skin-header,
+.panel-heading {
+  border-color: #d4d4cd;
+  border-style: outset;
+  background-color: #858681;
+  background-image:
+    radial-gradient(circle at 18% 28%, rgb(0 0 0 / 30%) 0 1px, transparent 2px),
+    radial-gradient(
+      circle at 76% 68%,
+      rgb(255 255 255 / 20%) 0 1px,
+      transparent 2px
+    ),
+    repeating-linear-gradient(
+      103deg,
+      transparent 0 15px,
+      rgb(0 0 0 / 14%) 16px,
+      transparent 18px
+    ),
+    linear-gradient(#d1d1ca 0%, #777873 43%, #b9b9b3 52%, #5d5e5a 100%);
+  background-size:
+    17px 14px,
+    23px 19px,
+    auto,
+    auto;
+  box-shadow:
+    inset 1px 1px 0 rgb(255 255 255 / 42%),
+    inset -1px -1px 0 rgb(0 0 0 / 55%),
+    1px 1px 0 #090909;
 }
 
 .panel-heading .tiny-button {
@@ -973,11 +1040,47 @@ input {
 }
 
 .equalizer-fader input {
-  width: 15px;
+  width: 18px;
   height: 121px;
   margin: 0;
   writing-mode: vertical-lr;
   direction: rtl;
+}
+
+.equalizer-fader input::-webkit-slider-runnable-track {
+  width: 11px;
+  border: 2px inset #777873;
+  background: linear-gradient(
+    90deg,
+    #090c0e 0 18%,
+    #61c8f0 22% 75%,
+    #14252c 79% 100%
+  );
+  box-shadow:
+    inset 0 0 2px #000,
+    1px 0 0 rgb(255 255 255 / 18%);
+}
+
+.equalizer-fader input::-webkit-slider-thumb {
+  width: 14px;
+  height: 10px;
+  border: 2px outset #e2e2dc;
+  border-radius: 0;
+  appearance: none;
+  background:
+    radial-gradient(circle at 25% 28%, #fff 0 1px, transparent 2px),
+    repeating-linear-gradient(
+      105deg,
+      transparent 0 6px,
+      rgb(0 0 0 / 16%) 7px,
+      transparent 9px
+    ),
+    linear-gradient(135deg, #f1f1eb, #858681 45%, #d2d2cc 55%, #565753);
+  box-shadow:
+    inset 1px 1px 0 rgb(255 255 255 / 70%),
+    inset -2px -2px 0 rgb(0 0 0 / 45%),
+    0 1px 2px #000;
+  transform: translateX(-1px);
 }
 
 .equalizer-art {
