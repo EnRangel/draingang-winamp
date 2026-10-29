@@ -593,7 +593,11 @@ function App() {
         <header className="skin-header">
           <div>
             <p className="eyebrow">DG AUDIO SYSTEM // 03</p>
-            <h1>DRAINAMP</h1>
+            {/*
+             * The word is drawn by a background image. aria-label keeps the
+             * title understandable to screen readers even without typed text.
+             */}
+            <h1 className="drain-wordmark" aria-label="DRAIN" />
           </div>
           <p className="player-status">{playerStatus}</p>
         </header>
