@@ -68,8 +68,6 @@ function EqualizerPanel({
       </div>
 
       <div className="equalizer-body">
-        <div className="equalizer-mascot" aria-hidden="true" />
-
         <div className="decibel-scale" aria-hidden="true">
           <span>+12dB</span>
           <span>0dB</span>
@@ -96,7 +94,6 @@ function EqualizerPanel({
 
         <div className="equalizer-art" aria-hidden="true">
           <span className="butterfly-mark">ƸӜƷ</span>
-          <div className="equalizer-mini-mascot" />
         </div>
       </div>
     </section>

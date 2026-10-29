@@ -85,9 +85,8 @@ function NowPlayingPanel({
 
   let artworkContent = (
     <div className="fallback-artwork" aria-label="Drainamp fallback artwork">
-      <span className="sigil-wing sigil-wing-left">D</span>
-      <span className="sigil-core">✦</span>
-      <span className="sigil-wing sigil-wing-right">G</span>
+      {/* The same character is reused here as a small monochrome mask. */}
+      <div className="fallback-drain-baby" />
     </div>
   );
 
@@ -107,12 +106,6 @@ function NowPlayingPanel({
             <span className="artwork-corner artwork-corner-top" />
             <span className="artwork-corner artwork-corner-bottom" />
           </div>
-
-          <div className="digital-display">
-            <p className="track-time">
-              {formatTime(currentTime)} / {formatTime(duration)}
-            </p>
-          </div>
         </div>
 
         <div className="control-column">
@@ -120,6 +113,9 @@ function NowPlayingPanel({
             <p className="track-name">{trackName}</p>
             <p className="track-artist">{trackArtist}</p>
             <p className="track-album">{trackAlbum}</p>
+            <p className="track-time">
+              {formatTime(currentTime)} / {formatTime(duration)}
+            </p>
           </div>
 
           <AudioVisualizer analyser={analyser} />

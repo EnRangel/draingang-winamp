@@ -569,26 +569,19 @@ function App() {
       <section className="milestone">
         <div className="skin-glow skin-glow-blue" />
         <div className="skin-glow skin-glow-red" />
-        <div className="skin-spark skin-spark-left" aria-hidden="true">
-          ✦
-        </div>
-        <div className="skin-spark skin-spark-right" aria-hidden="true">
-          ✦
-        </div>
-
         {/*
          * This layer is only visual. aria-hidden keeps screen readers focused
          * on the real player controls instead of announcing decorative stars.
          */}
         <div className="edge-decorations" aria-hidden="true">
-          <span className="edge-star edge-star-one">✦</span>
-          <span className="edge-star edge-star-two">✧</span>
-          <span className="edge-star edge-star-three">✦</span>
-          <span className="edge-star edge-star-four">✦</span>
-          <span className="edge-star edge-star-five">✧</span>
-          <span className="edge-star edge-star-six">✦</span>
-          <span className="edge-star edge-star-seven">✦</span>
-          <span className="edge-star edge-star-eight">✧</span>
+          <span className="edge-star edge-star-one" />
+          <span className="edge-star edge-star-two" />
+          <span className="edge-star edge-star-three" />
+          <span className="edge-star edge-star-four" />
+          <span className="edge-star edge-star-five" />
+          <span className="edge-star edge-star-six" />
+          <span className="edge-star edge-star-seven" />
+          <span className="edge-star edge-star-eight" />
         </div>
 
         <WindowControls />
@@ -662,8 +655,6 @@ function App() {
           onTimeUpdate={handleAudioTimeUpdate}
         />
       </section>
-
-      <div className="drain-baby" aria-hidden="true" />
     </main>
   );
 }
