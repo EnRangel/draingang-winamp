@@ -56,7 +56,6 @@ function EqualizerPanel({
   return (
     <section className="equalizer-panel">
       <div className="panel-heading equalizer-heading">
-        <span className="equalizer-title">EQUALIZER</span>
         <span className="equalizer-heading-chain" aria-hidden="true" />
 
         <div className="equalizer-actions">
