@@ -57,6 +57,7 @@ function EqualizerPanel({
     <section className="equalizer-panel">
       <div className="panel-heading equalizer-heading">
         <span className="equalizer-title">EQUALIZER</span>
+        <span className="equalizer-heading-chain" aria-hidden="true" />
 
         <div className="equalizer-actions">
           <span className="equalizer-switch equalizer-switch-active">ON</span>
@@ -68,6 +69,9 @@ function EqualizerPanel({
       </div>
 
       <div className="equalizer-body">
+        {/* Keep the mascot's old area empty so the sliders do not stretch. */}
+        <div className="equalizer-mascot-space" aria-hidden="true" />
+
         <div className="decibel-scale" aria-hidden="true">
           <span>+12dB</span>
           <span>0dB</span>
