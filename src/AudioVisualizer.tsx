@@ -29,6 +29,8 @@ function AudioVisualizer({ analyser }: AudioVisualizerProps) {
     const activeCanvas = canvas;
     const activeDrawingContext = drawingContext;
     const frequencyData = new Uint8Array(activeAnalyser.frequencyBinCount);
+    const barCount = 32;
+    const trailingHeights = new Float32Array(barCount);
     let animationFrame = 0;
 
     function drawBars() {
@@ -40,7 +42,6 @@ function AudioVisualizer({ analyser }: AudioVisualizerProps) {
         activeCanvas.height,
       );
 
-      const barCount = 32;
       const gap = 2;
       const barWidth = (activeCanvas.width - gap * (barCount - 1)) / barCount;
 
@@ -49,6 +50,35 @@ function AudioVisualizer({ analyser }: AudioVisualizerProps) {
         const barHeight = (frequencyValue / 255) * activeCanvas.height;
         const xPosition = barIndex * (barWidth + gap);
         const yPosition = activeCanvas.height - barHeight;
+
+        /*
+         * A trail rises immediately with the live bar but falls slowly. This
+         * creates the pale-blue afterimage visible above descending bars.
+         */
+        if (barHeight > trailingHeights[barIndex]) {
+          trailingHeights[barIndex] = barHeight;
+        } else {
+          trailingHeights[barIndex] *= 0.94;
+        }
+
+        const trailingHeight = trailingHeights[barIndex];
+        const trailingYPosition = activeCanvas.height - trailingHeight;
+
+        activeDrawingContext.fillStyle = 'rgb(135 226 255 / 22%)';
+        activeDrawingContext.fillRect(
+          xPosition,
+          trailingYPosition,
+          barWidth,
+          trailingHeight,
+        );
+
+        activeDrawingContext.fillStyle = 'rgb(225 249 255 / 55%)';
+        activeDrawingContext.fillRect(
+          xPosition,
+          trailingYPosition,
+          barWidth,
+          1.5,
+        );
 
         // Higher bars become pale blue, while lower bars stay deep cyan.
         const lightness = 42 + (frequencyValue / 255) * 38;

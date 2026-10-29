@@ -32,6 +32,12 @@ input {
 }
 
 .milestone {
+  --equalizer-breath-opacity: 0.24;
+  --equalizer-breath-scale: 1;
+  --active-track-glow: 2px;
+  --playlist-red-opacity: 0.28;
+  --bass-overlay-opacity: 0;
+
   position: absolute;
   top: 0;
   left: 0;
@@ -77,6 +83,18 @@ input {
   user-select: none;
 }
 
+/* Strong bass briefly exposes a red light across the complete player skin. */
+.milestone::before {
+  position: absolute;
+  inset: 0;
+  z-index: 29;
+  background: radial-gradient(circle at 72% 36%, #ff2448, transparent 58%);
+  content: '';
+  mix-blend-mode: screen;
+  opacity: var(--bass-overlay-opacity);
+  pointer-events: none;
+}
+
 .milestone::after {
   position: absolute;
   inset: 0;
@@ -101,6 +119,7 @@ input {
       rgb(255 255 255 / 2%) 39px
     );
   content: '';
+  animation: surface-drift 8s steps(8, end) infinite;
   mix-blend-mode: screen;
   pointer-events: none;
 }
@@ -562,7 +581,10 @@ input {
   color: #f8f8f4;
   font-size: 0.85rem;
   letter-spacing: 0.06em;
-  text-shadow: 1px 0 #ff2448;
+  text-shadow:
+    -1px 0 rgb(114 217 255 / 72%),
+    1px 0 rgb(255 36 72 / 72%),
+    0 0 4px rgb(226 249 255 / 28%);
 }
 
 .track-artist {
@@ -586,7 +608,10 @@ input {
   font-size: 0.76rem;
   letter-spacing: 0.04em;
   white-space: nowrap;
-  text-shadow: 0 0 5px #3abdf5;
+  text-shadow:
+    -1px 0 rgb(255 36 72 / 65%),
+    1px 0 rgb(114 217 255 / 80%),
+    0 0 5px #3abdf5;
 }
 
 .signal-details {
@@ -973,12 +998,15 @@ input {
   position: absolute;
   inset: 0;
   z-index: 0;
-  background: url('./assets/redlight-equalizer-animated.png') 30% center / auto
-    100% no-repeat;
+  background: url('./assets/redlight-equalizer-animated.png') 33% center / auto
+    175% no-repeat;
   content: '';
   filter: saturate(1.05) brightness(1.08) contrast(1.05);
-  opacity: 0.32;
+  opacity: var(--equalizer-breath-opacity);
   pointer-events: none;
+  transform: scale(var(--equalizer-breath-scale));
+  transform-origin: center;
+  will-change: opacity, transform;
 }
 
 /* Keep every slider and label above the animated background layer. */
@@ -1106,6 +1134,7 @@ input {
 
 .playlist-body {
   position: relative;
+  isolation: isolate;
   min-height: 0;
   padding: 4px 70px 4px 27px;
   overflow: hidden;
@@ -1121,6 +1150,19 @@ input {
     ),
     radial-gradient(circle at 70% 70%, rgb(49 132 176 / 10%), transparent 28%);
   -webkit-app-region: no-drag;
+}
+
+/* Centering the same animated image reveals its red breathing-light section. */
+.playlist-body::before {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: url('./assets/redlight-equalizer-animated.png') center / auto 100%
+    no-repeat;
+  content: '';
+  filter: saturate(1.25) contrast(1.08);
+  opacity: var(--playlist-red-opacity);
+  pointer-events: none;
 }
 
 .playlist-actions {
@@ -1162,7 +1204,7 @@ label.playlist-action {
       transparent 0 20px,
       rgb(255 255 255 / 4%) 21px
     ),
-    rgb(0 2 4 / 80%);
+    rgb(0 2 4 / 58%);
 }
 
 .playlist-empty {
@@ -1208,6 +1250,10 @@ label.playlist-action {
 .playlist-track-active {
   color: #041015;
   background: linear-gradient(90deg, #bfeeff, #75c8eb 72%, #f0f0ea);
+  animation: active-track-flicker 3.2s linear infinite;
+  box-shadow:
+    0 0 var(--active-track-glow) rgb(117 211 250 / 62%),
+    inset 0 0 6px rgb(255 255 255 / 38%);
 }
 
 .playlist-track-active span:last-child {
@@ -1410,9 +1456,56 @@ label.playlist-action {
   }
 }
 
+@keyframes surface-drift {
+  0%,
+  100% {
+    background-position: 0 0;
+  }
+
+  35% {
+    background-position: 2px -1px;
+  }
+
+  70% {
+    background-position: -1px 1px;
+  }
+}
+
+@keyframes active-track-flicker {
+  0%,
+  46%,
+  53%,
+  100% {
+    filter: brightness(1);
+  }
+
+  48% {
+    filter: brightness(0.93);
+  }
+
+  50% {
+    filter: brightness(1.12);
+  }
+
+  76% {
+    filter: brightness(1.04);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .fallback-artwork,
-  .artwork-scan-line {
+  .artwork-scan-line,
+  .milestone::after,
+  .playlist-track-active {
     animation: none;
+  }
+
+  .equalizer-body::before {
+    opacity: 0.28;
+    transform: none;
+  }
+
+  .playlist-body::before {
+    opacity: 0.32;
   }
 }
