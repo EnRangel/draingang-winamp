@@ -17,12 +17,14 @@ import EqualizerPanel from './components/EqualizerPanel';
 import NowPlayingPanel from './components/NowPlayingPanel';
 import PlaylistPanel from './components/PlaylistPanel';
 import WindowControls from './components/WindowControls';
+import { useAudioReactivity } from './hooks/useAudioReactivity';
 import { usePlayerSettings } from './hooks/usePlayerSettings';
 import { findNextTrackIndex, isSupportedAudioFile } from './playerUtils';
 
 function App() {
   const audioPlayer = useRef<HTMLAudioElement | null>(null);
   const audioEngine = useRef<AudioEngine | null>(null);
+  const playerSkin = useRef<HTMLElement | null>(null);
 
   /*
    * This ref remembers every temporary blob URL we create. Unlike state,
@@ -62,6 +64,8 @@ function App() {
     trebleGain,
     setTrebleGain,
   } = usePlayerSettings();
+
+  useAudioReactivity(analyserNode, playerSkin);
 
   /*
    * An effect runs after React updates the page. This one keeps the real audio
@@ -566,7 +570,7 @@ function App() {
 
   return (
     <main className="desktop-stage">
-      <section className="milestone">
+      <section ref={playerSkin} className="milestone">
         <div className="skin-glow skin-glow-blue" />
         <div className="skin-glow skin-glow-red" />
         {/*
