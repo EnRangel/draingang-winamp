@@ -44,7 +44,6 @@ function PlaylistPanel({
   return (
     <section className="playlist-panel">
       <div className="panel-heading playlist-heading">
-        <span className="playlist-title">PLAYLIST</span>
         <span className="playlist-window-marks" aria-hidden="true">
           □ ▣ ×
         </span>

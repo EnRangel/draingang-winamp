@@ -53,7 +53,7 @@ function AudioVisualizer({ analyser }: AudioVisualizerProps) {
 
         /*
          * A trail rises immediately with the live bar but falls slowly. This
-         * creates the pale-blue afterimage visible above descending bars.
+         * creates the dark-red afterimage visible above descending bars.
          */
         if (barHeight > trailingHeights[barIndex]) {
           trailingHeights[barIndex] = barHeight;
@@ -64,7 +64,7 @@ function AudioVisualizer({ analyser }: AudioVisualizerProps) {
         const trailingHeight = trailingHeights[barIndex];
         const trailingYPosition = activeCanvas.height - trailingHeight;
 
-        activeDrawingContext.fillStyle = 'rgb(135 226 255 / 22%)';
+        activeDrawingContext.fillStyle = 'rgb(126 11 33 / 30%)';
         activeDrawingContext.fillRect(
           xPosition,
           trailingYPosition,
@@ -72,7 +72,7 @@ function AudioVisualizer({ analyser }: AudioVisualizerProps) {
           trailingHeight,
         );
 
-        activeDrawingContext.fillStyle = 'rgb(225 249 255 / 55%)';
+        activeDrawingContext.fillStyle = 'rgb(181 48 73 / 48%)';
         activeDrawingContext.fillRect(
           xPosition,
           trailingYPosition,
@@ -80,10 +80,10 @@ function AudioVisualizer({ analyser }: AudioVisualizerProps) {
           1.5,
         );
 
-        // Higher bars become pale blue, while lower bars stay deep cyan.
-        const lightness = 42 + (frequencyValue / 255) * 38;
+        // Louder bars become brighter red while quieter bars stay deep red.
+        const lightness = 22 + (frequencyValue / 255) * 20;
         activeDrawingContext.fillStyle =
-          'hsl(197 100% ' + String(lightness) + '%)';
+          'hsl(347 76% ' + String(lightness) + '%)';
         activeDrawingContext.fillRect(
           xPosition,
           yPosition,

@@ -571,7 +571,7 @@ function App() {
   return (
     <main className="desktop-stage">
       <section ref={playerSkin} className="milestone">
-        <div className="skin-glow skin-glow-blue" />
+        <div className="skin-glow skin-glow-top-red" />
         <div className="skin-glow skin-glow-red" />
         {/*
          * This layer is only visual. aria-hidden keeps screen readers focused

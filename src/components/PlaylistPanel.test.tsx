@@ -53,7 +53,6 @@ describe('PlaylistPanel', () => {
   it('renders playlist metadata and marks the active track', () => {
     renderPlaylist(tracks, 0);
 
-    expect(screen.getByText('PLAYLIST')).toBeInTheDocument();
     expect(screen.getByText('Glass Wings')).toBeInTheDocument();
     expect(screen.getByText('Empty Orbits')).toBeInTheDocument();
     expect(screen.getByText('4:21')).toBeInTheDocument();
