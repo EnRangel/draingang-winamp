@@ -27,8 +27,8 @@ input {
 
 .desktop-stage {
   position: relative;
-  width: 392px;
-  height: 493px;
+  width: 361px;
+  height: 462px;
 }
 
 .milestone {
@@ -37,9 +37,10 @@ input {
   left: 0;
   isolation: isolate;
 
-  width: 700px;
-  height: 880px;
-  padding: 28px;
+  /* Removing the old padding crops the shell without stretching the tabs. */
+  width: 644px;
+  height: 824px;
+  padding: 0;
   border: 3px solid #777976;
 
   display: grid;
@@ -74,16 +75,6 @@ input {
   transform: scale(0.56);
   transform-origin: top left;
   user-select: none;
-}
-
-.milestone::before {
-  position: absolute;
-  inset: 9px;
-  z-index: -1;
-
-  border: 1px dashed rgb(230 230 220 / 32%);
-  content: '';
-  pointer-events: none;
 }
 
 .milestone::after {
@@ -232,8 +223,8 @@ input {
 
 .window-controls {
   position: absolute;
-  top: 31px;
-  right: 37px;
+  top: 3px;
+  right: 9px;
   z-index: 50;
 
   display: flex;
@@ -326,6 +317,8 @@ input {
 }
 
 .skin-header h1 {
+  position: relative;
+  z-index: 1;
   color: #0b0b0b;
   font-family: 'Segoe Print', 'Comic Sans MS', cursive;
   font-size: 1.3rem;
@@ -340,6 +333,8 @@ input {
 }
 
 .player-status {
+  position: relative;
+  z-index: 1;
   color: #111;
   font-size: 0.65rem;
   font-weight: 900;
@@ -902,7 +897,22 @@ input {
   text-shadow: 1px 1px 0 #c9c9c3;
 }
 
+.equalizer-heading-chain {
+  position: absolute;
+  top: -13px;
+  left: 128px;
+  width: 245px;
+  height: 66px;
+  background: url('./assets/equalizer-chain-hd.png') center / contain no-repeat;
+  filter: grayscale(1) brightness(1.75) contrast(0.92)
+    drop-shadow(1px 2px 1px #050505);
+  opacity: 0.94;
+  pointer-events: none;
+}
+
 .equalizer-actions {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   gap: 4px;
@@ -922,10 +932,12 @@ input {
 }
 
 .equalizer-body {
+  position: relative;
+  isolation: isolate;
   min-height: 0;
   padding: 5px;
   display: grid;
-  grid-template-columns: 43px minmax(0, 1fr) 58px;
+  grid-template-columns: 130px 43px minmax(0, 1fr) 76px;
   gap: 5px;
   overflow: hidden;
 
@@ -950,6 +962,29 @@ input {
   box-shadow:
     inset 0 0 18px #000,
     inset 0 0 0 1px #202323;
+}
+
+/*
+ * This pseudo-element is a decorative layer behind the real controls.
+ * The PNG contains its own animation frames, so Electron plays the same
+ * breathing red-light loop used by the Firefox theme project.
+ */
+.equalizer-body::before {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: url('./assets/redlight-equalizer-animated.png') 30% center / auto
+    100% no-repeat;
+  content: '';
+  filter: saturate(1.05) brightness(1.08) contrast(1.05);
+  opacity: 0.32;
+  pointer-events: none;
+}
+
+/* Keep every slider and label above the animated background layer. */
+.equalizer-body > * {
+  position: relative;
+  z-index: 1;
 }
 
 .decibel-scale {
