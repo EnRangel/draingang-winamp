@@ -72,7 +72,7 @@ function AudioVisualizer({ analyser }: AudioVisualizerProps) {
           trailingHeight,
         );
 
-        activeDrawingContext.fillStyle = 'rgb(181 48 73 / 48%)';
+        activeDrawingContext.fillStyle = 'rgb(220 243 250 / 52%)';
         activeDrawingContext.fillRect(
           xPosition,
           trailingYPosition,
@@ -80,10 +80,10 @@ function AudioVisualizer({ analyser }: AudioVisualizerProps) {
           1.5,
         );
 
-        // Louder bars become brighter red while quieter bars stay deep red.
-        const lightness = 22 + (frequencyValue / 255) * 20;
+        // Louder bars become icy white-blue while quieter bars stay muted blue.
+        const lightness = 38 + (frequencyValue / 255) * 28;
         activeDrawingContext.fillStyle =
-          'hsl(347 76% ' + String(lightness) + '%)';
+          'hsl(196 60% ' + String(lightness) + '%)';
         activeDrawingContext.fillRect(
           xPosition,
           yPosition,
