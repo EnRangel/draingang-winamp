@@ -59,6 +59,11 @@ describe('PlaylistPanel', () => {
     expect(screen.getByText('Empty Orbits')).toBeInTheDocument();
     expect(screen.getByText('4:21')).toBeInTheDocument();
     expect(screen.getByText('2 TRACKS · 7:29')).toBeInTheDocument();
+    expect(screen.getByText('ADD')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'REMOVE' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'CLEAR' })).toBeInTheDocument();
+    expect(screen.queryByText('LOAD ▼')).not.toBeInTheDocument();
+    expect(screen.queryByText('SEL')).not.toBeInTheDocument();
     expect(screen.getByTitle('glass-wings.mp3')).toHaveClass(
       'playlist-track-active',
     );
