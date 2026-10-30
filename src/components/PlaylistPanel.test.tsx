@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -30,6 +30,7 @@ function renderPlaylist(
   playlist: Track[],
   currentTrackIndex: number,
   onTrackClick = vi.fn(),
+  onMoveTrack = vi.fn(),
 ) {
   return render(
     <PlaylistPanel
@@ -41,6 +42,7 @@ function renderPlaylist(
       onRemove={vi.fn()}
       onClear={vi.fn()}
       onTrackClick={onTrackClick}
+      onMoveTrack={onMoveTrack}
       onDragEnter={vi.fn()}
       onDragOver={vi.fn()}
       onDragLeave={vi.fn()}
@@ -56,6 +58,7 @@ describe('PlaylistPanel', () => {
     expect(screen.getByText('Glass Wings')).toBeInTheDocument();
     expect(screen.getByText('Empty Orbits')).toBeInTheDocument();
     expect(screen.getByText('4:21')).toBeInTheDocument();
+    expect(screen.getByText('2 TRACKS · 7:29')).toBeInTheDocument();
     expect(screen.getByTitle('glass-wings.mp3')).toHaveClass(
       'playlist-track-active',
     );
@@ -76,5 +79,33 @@ describe('PlaylistPanel', () => {
 
     expect(screen.getByRole('button', { name: 'REMOVE' })).toBeDisabled();
     expect(screen.getByRole('button', { name: 'CLEAR' })).toBeDisabled();
+  });
+
+  it('reports the source and destination when a track is dragged', () => {
+    const handleMoveTrack = vi.fn();
+    let draggedIndex = '';
+    const dataTransfer = {
+      effectAllowed: 'none',
+      dropEffect: 'none',
+      types: ['application/x-drainamp-track-index'],
+      setData: vi.fn((_type: string, value: string) => {
+        draggedIndex = value;
+      }),
+      getData: vi.fn(() => draggedIndex),
+    };
+
+    renderPlaylist(tracks, 0, vi.fn(), handleMoveTrack);
+
+    const firstTrackItem = screen.getByTitle('glass-wings.mp3').closest('li');
+    const secondTrackItem = screen.getByTitle('empty-orbits.mp3').closest('li');
+
+    if (firstTrackItem === null || secondTrackItem === null) {
+      throw new Error('Expected both playlist items to exist.');
+    }
+
+    fireEvent.dragStart(firstTrackItem, { dataTransfer });
+    fireEvent.drop(secondTrackItem, { dataTransfer });
+
+    expect(handleMoveTrack).toHaveBeenCalledWith(0, 1);
   });
 });

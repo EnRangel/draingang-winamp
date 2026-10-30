@@ -12,6 +12,7 @@ describe('usePlayerSettings', () => {
     localStorage.setItem('drainamp-volume', '42');
     localStorage.setItem('drainamp-muted', 'true');
     localStorage.setItem('drainamp-repeat', 'all');
+    localStorage.setItem('drainamp-eq-enabled', 'false');
     localStorage.setItem('drainamp-eq-60', '6');
     localStorage.setItem('drainamp-eq-170', '-3');
 
@@ -21,6 +22,7 @@ describe('usePlayerSettings', () => {
     expect(result.current.volume).toBe(42);
     expect(result.current.isMuted).toBe(true);
     expect(result.current.repeatMode).toBe('all');
+    expect(result.current.isEqualizerEnabled).toBe(false);
     expect(result.current.equalizerGains[0]).toBe(6);
     expect(result.current.equalizerGains[1]).toBe(-3);
   });
@@ -47,6 +49,7 @@ describe('usePlayerSettings', () => {
     act(() => {
       result.current.setVolume(35);
       result.current.setIsShuffleEnabled(true);
+      result.current.setIsEqualizerEnabled(false);
       const updatedGains = result.current.equalizerGains.slice();
       updatedGains[9] = -4;
       result.current.setEqualizerGains(updatedGains);
@@ -55,6 +58,7 @@ describe('usePlayerSettings', () => {
     await waitFor(() => {
       expect(localStorage.getItem('drainamp-volume')).toBe('35');
       expect(localStorage.getItem('drainamp-shuffle')).toBe('true');
+      expect(localStorage.getItem('drainamp-eq-enabled')).toBe('false');
       expect(localStorage.getItem('drainamp-eq-16000')).toBe('-4');
     });
   });

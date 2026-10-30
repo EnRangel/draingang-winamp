@@ -58,13 +58,20 @@ function createAudioEngine(
 export function applyEqualizerGains(
   engine: AudioEngine,
   gains: EqualizerGains,
+  isEqualizerEnabled: boolean,
 ) {
   for (
     let filterIndex = 0;
     filterIndex < engine.equalizerFilters.length;
     filterIndex += 1
   ) {
-    engine.equalizerFilters[filterIndex].gain.value = gains[filterIndex];
+    let appliedGain = 0;
+
+    if (isEqualizerEnabled) {
+      appliedGain = gains[filterIndex];
+    }
+
+    engine.equalizerFilters[filterIndex].gain.value = appliedGain;
   }
 }
 
@@ -72,6 +79,7 @@ export async function ensureAudioEngine(
   audioElement: HTMLAudioElement,
   existingEngine: AudioEngine | null,
   gains: EqualizerGains,
+  isEqualizerEnabled: boolean,
 ): Promise<AudioEngine> {
   let engine = existingEngine;
 
@@ -79,7 +87,7 @@ export async function ensureAudioEngine(
     engine = createAudioEngine(audioElement, gains);
   }
 
-  applyEqualizerGains(engine, gains);
+  applyEqualizerGains(engine, gains, isEqualizerEnabled);
 
   // Browsers begin audio contexts suspended until the user presses play.
   if (engine.context.state === 'suspended') {

@@ -2,6 +2,8 @@ import type { ChangeEvent, DragEvent } from 'react';
 
 import type { Track } from '../audioMetadata';
 
+const PLAYLIST_DRAG_TYPE = 'application/x-drainamp-track-index';
+
 type PlaylistPanelProps = {
   playlist: Track[];
   currentTrackIndex: number;
@@ -11,11 +13,50 @@ type PlaylistPanelProps = {
   onRemove: () => void;
   onClear: () => void;
   onTrackClick: (trackIndex: number) => void;
+  onMoveTrack: (fromIndex: number, toIndex: number) => void;
   onDragEnter: (event: DragEvent<HTMLDivElement>) => void;
   onDragOver: (event: DragEvent<HTMLDivElement>) => void;
   onDragLeave: (event: DragEvent<HTMLDivElement>) => void;
   onDrop: (event: DragEvent<HTMLDivElement>) => void;
 };
+
+function durationTextToSeconds(duration: string): number {
+  const durationParts = duration.split(':');
+
+  if (durationParts.length !== 2) {
+    return 0;
+  }
+
+  const minutes = Number(durationParts[0]);
+  const seconds = Number(durationParts[1]);
+
+  if (
+    Number.isFinite(minutes) === false ||
+    Number.isFinite(seconds) === false
+  ) {
+    return 0;
+  }
+
+  return minutes * 60 + seconds;
+}
+
+function createPlaylistSummary(playlist: Track[]): string {
+  let totalSeconds = 0;
+
+  for (const track of playlist) {
+    totalSeconds += durationTextToSeconds(track.duration);
+  }
+
+  const totalMinutes = Math.floor(totalSeconds / 60);
+  const remainingSeconds = totalSeconds % 60;
+  const trackWord = playlist.length === 1 ? 'TRACK' : 'TRACKS';
+
+  // padStart changes 7 seconds into "07" so the result looks like a timer.
+  const formattedDuration =
+    String(totalMinutes) + ':' + String(remainingSeconds).padStart(2, '0');
+
+  return String(playlist.length) + ' ' + trackWord + ' · ' + formattedDuration;
+}
 
 function PlaylistPanel({
   playlist,
@@ -26,11 +67,47 @@ function PlaylistPanel({
   onRemove,
   onClear,
   onTrackClick,
+  onMoveTrack,
   onDragEnter,
   onDragOver,
   onDragLeave,
   onDrop,
 }: PlaylistPanelProps) {
+  function handleTrackDragStart(
+    event: DragEvent<HTMLLIElement>,
+    trackIndex: number,
+  ) {
+    event.stopPropagation();
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData(PLAYLIST_DRAG_TYPE, String(trackIndex));
+  }
+
+  function handleTrackDragOver(event: DragEvent<HTMLLIElement>) {
+    if (event.dataTransfer.types.includes(PLAYLIST_DRAG_TYPE) === false) {
+      return;
+    }
+
+    // A drop is blocked by default, so preventDefault enables reordering here.
+    event.preventDefault();
+    event.stopPropagation();
+    event.dataTransfer.dropEffect = 'move';
+  }
+
+  function handleTrackDrop(event: DragEvent<HTMLLIElement>, toIndex: number) {
+    if (event.dataTransfer.types.includes(PLAYLIST_DRAG_TYPE) === false) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    const fromIndex = Number(event.dataTransfer.getData(PLAYLIST_DRAG_TYPE));
+
+    if (Number.isInteger(fromIndex)) {
+      onMoveTrack(fromIndex, toIndex);
+    }
+  }
+
   let dropZoneClassName = 'drop-zone';
   if (isDraggingFile) {
     dropZoneClassName += ' drop-zone-active';
@@ -39,6 +116,12 @@ function PlaylistPanel({
   let dropZoneText = 'DROP AUDIO SIGNALS HERE';
   if (isAddingTracks) {
     dropZoneText = 'READING METADATA...';
+  }
+
+  let playlistSummary = createPlaylistSummary(playlist);
+
+  if (isAddingTracks) {
+    playlistSummary = 'READING SIGNALS...';
   }
 
   return (
@@ -74,7 +157,14 @@ function PlaylistPanel({
             }
 
             return (
-              <li key={track.source}>
+              <li
+                className="playlist-item"
+                key={track.source}
+                draggable
+                onDragStart={(event) => handleTrackDragStart(event, trackIndex)}
+                onDragOver={handleTrackDragOver}
+                onDrop={(event) => handleTrackDrop(event, trackIndex)}
+              >
                 <button
                   className={trackButtonClassName}
                   type="button"
@@ -136,7 +226,9 @@ function PlaylistPanel({
           </button>
         </div>
 
-        <div className="playlist-footer-scratch" aria-hidden="true" />
+        <div className="playlist-footer-summary" aria-live="polite">
+          {playlistSummary}
+        </div>
 
         <label className="playlist-action playlist-load-action">
           LOAD ▼

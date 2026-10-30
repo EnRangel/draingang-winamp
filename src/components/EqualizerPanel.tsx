@@ -1,9 +1,17 @@
 import type { ChangeEvent } from 'react';
 
-import { EQUALIZER_BANDS, type EqualizerGains } from '../playerTypes';
+import {
+  EQUALIZER_BANDS,
+  EQUALIZER_PRESETS,
+  findEqualizerPresetName,
+  type EqualizerGains,
+} from '../playerTypes';
 
 type EqualizerPanelProps = {
+  isEqualizerEnabled: boolean;
   equalizerGains: EqualizerGains;
+  onToggle: () => void;
+  onPresetChange: (presetName: string) => void;
   onGainChange: (
     bandIndex: number,
     event: ChangeEvent<HTMLInputElement>,
@@ -12,18 +20,50 @@ type EqualizerPanelProps = {
 };
 
 function EqualizerPanel({
+  isEqualizerEnabled,
   equalizerGains,
+  onToggle,
+  onPresetChange,
   onGainChange,
   onReset,
 }: EqualizerPanelProps) {
+  const selectedPresetName = findEqualizerPresetName(equalizerGains);
+
   return (
     <section className="equalizer-panel">
       <div className="panel-heading equalizer-heading">
         <span className="equalizer-heading-chain" aria-hidden="true" />
 
         <div className="equalizer-actions">
-          <span className="equalizer-switch equalizer-switch-active">ON</span>
-          <span className="equalizer-switch">AUTO</span>
+          <button
+            className={
+              isEqualizerEnabled
+                ? 'equalizer-switch equalizer-switch-active'
+                : 'equalizer-switch'
+            }
+            type="button"
+            aria-pressed={isEqualizerEnabled}
+            onClick={onToggle}
+          >
+            {isEqualizerEnabled ? 'ON' : 'OFF'}
+          </button>
+
+          <select
+            className="equalizer-preset-select"
+            aria-label="Equalizer preset"
+            value={selectedPresetName}
+            onChange={(event) => onPresetChange(event.target.value)}
+          >
+            <option value="CUSTOM" disabled>
+              CUSTOM
+            </option>
+            {EQUALIZER_PRESETS.map((preset) => (
+              <option value={preset.name} key={preset.name}>
+                {preset.name}
+              </option>
+            ))}
+          </select>
+
           <button className="tiny-button" type="button" onClick={onReset}>
             RESET
           </button>

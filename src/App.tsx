@@ -18,8 +18,9 @@ import NowPlayingPanel from './components/NowPlayingPanel';
 import PlaylistPanel from './components/PlaylistPanel';
 import WindowControls from './components/WindowControls';
 import { useAudioReactivity } from './hooks/useAudioReactivity';
+import { usePlayerKeyboardShortcuts } from './hooks/usePlayerKeyboardShortcuts';
 import { usePlayerSettings } from './hooks/usePlayerSettings';
-import { EQUALIZER_BANDS } from './playerTypes';
+import { EQUALIZER_BANDS, EQUALIZER_PRESETS } from './playerTypes';
 import { findNextTrackIndex, isSupportedAudioFile } from './playerUtils';
 
 function App() {
@@ -58,11 +59,19 @@ function App() {
     setIsShuffleEnabled,
     repeatMode,
     setRepeatMode,
+    isEqualizerEnabled,
+    setIsEqualizerEnabled,
     equalizerGains,
     setEqualizerGains,
   } = usePlayerSettings();
 
   useAudioReactivity(analyserNode, playerSkin);
+  usePlayerKeyboardShortcuts({
+    onPlayPause: handleKeyboardPlayPause,
+    onSeekBackward: handleKeyboardSeekBackward,
+    onSeekForward: handleKeyboardSeekForward,
+    onRemoveTrack: handleRemoveTrackBtnClick,
+  });
 
   /*
    * An effect runs after React updates the page. This one keeps the real audio
@@ -79,9 +88,9 @@ function App() {
     const engine = audioEngine.current;
 
     if (engine !== null) {
-      applyEqualizerGains(engine, equalizerGains);
+      applyEqualizerGains(engine, equalizerGains, isEqualizerEnabled);
     }
-  }, [volume, isMuted, equalizerGains]);
+  }, [volume, isMuted, equalizerGains, isEqualizerEnabled]);
 
   /*
    * Returning a function from an effect creates cleanup work. React runs this
@@ -174,6 +183,7 @@ function App() {
       audioElement,
       audioEngine.current,
       equalizerGains,
+      isEqualizerEnabled,
     );
 
     audioEngine.current = engine;
@@ -331,6 +341,20 @@ function App() {
     setEqualizerGains(resetGains);
   }
 
+  function handleEqualizerToggleBtnClick() {
+    setIsEqualizerEnabled(isEqualizerEnabled === false);
+  }
+
+  function handleEqualizerPresetChange(presetName: string) {
+    for (const preset of EQUALIZER_PRESETS) {
+      if (preset.name === presetName) {
+        // slice() gives React a new array instead of sharing the preset array.
+        setEqualizerGains(preset.gains.slice());
+        return;
+      }
+    }
+  }
+
   function handleMuteBtnClick() {
     if (isMuted) {
       setIsMuted(false);
@@ -388,6 +412,40 @@ function App() {
     setPlayWhenReady(false);
     setCurrentTime(0);
     setIsPlaying(false);
+  }
+
+  function seekBySeconds(secondsToMove: number) {
+    const audioElement = audioPlayer.current;
+
+    if (audioElement === null || audioSource === '') {
+      return;
+    }
+
+    let newTime = audioElement.currentTime + secondsToMove;
+
+    if (newTime < 0) {
+      newTime = 0;
+    }
+
+    if (duration > 0 && newTime > duration) {
+      newTime = duration;
+    }
+
+    audioElement.currentTime = newTime;
+    setCurrentTime(newTime);
+  }
+
+  function handleKeyboardPlayPause() {
+    // The keyboard event cannot await playback, so start it without blocking.
+    void handlePlayPauseBtnClick();
+  }
+
+  function handleKeyboardSeekBackward() {
+    seekBySeconds(-5);
+  }
+
+  function handleKeyboardSeekForward() {
+    seekBySeconds(5);
   }
 
   async function addFilesToPlaylist(selectedFiles: FileList) {
@@ -502,6 +560,34 @@ function App() {
     resetPlayer();
   }
 
+  function handleMovePlaylistTrack(fromIndex: number, toIndex: number) {
+    if (
+      fromIndex < 0 ||
+      toIndex < 0 ||
+      fromIndex >= playlist.length ||
+      toIndex >= playlist.length ||
+      fromIndex === toIndex
+    ) {
+      return;
+    }
+
+    const updatedPlaylist = playlist.slice();
+    const movedTrack = updatedPlaylist[fromIndex];
+
+    updatedPlaylist.splice(fromIndex, 1);
+    updatedPlaylist.splice(toIndex, 0, movedTrack);
+    setPlaylist(updatedPlaylist);
+
+    // Keep currentTrackIndex pointing at the song that is already playing.
+    if (currentTrackIndex === fromIndex) {
+      setCurrentTrackIndex(toIndex);
+    } else if (fromIndex < currentTrackIndex && toIndex >= currentTrackIndex) {
+      setCurrentTrackIndex(currentTrackIndex - 1);
+    } else if (fromIndex > currentTrackIndex && toIndex <= currentTrackIndex) {
+      setCurrentTrackIndex(currentTrackIndex + 1);
+    }
+  }
+
   function handleShuffleBtnClick() {
     if (isShuffleEnabled) {
       setIsShuffleEnabled(false);
@@ -522,7 +608,10 @@ function App() {
 
   function handleDragEnter(event: DragEvent<HTMLDivElement>) {
     event.preventDefault();
-    setIsDraggingFile(true);
+
+    if (event.dataTransfer.types.includes('Files')) {
+      setIsDraggingFile(true);
+    }
   }
 
   function handleDragOver(event: DragEvent<HTMLDivElement>) {
@@ -538,7 +627,10 @@ function App() {
   async function handleDrop(event: DragEvent<HTMLDivElement>) {
     event.preventDefault();
     setIsDraggingFile(false);
-    await addFilesToPlaylist(event.dataTransfer.files);
+
+    if (event.dataTransfer.files.length > 0) {
+      await addFilesToPlaylist(event.dataTransfer.files);
+    }
   }
 
   const hasPreviousTrack =
@@ -554,11 +646,6 @@ function App() {
     } else if (isShuffleEnabled && playlist.length > 1) {
       hasNextTrack = true;
     }
-  }
-
-  let playerStatus = String(playlist.length) + ' TRACKS';
-  if (isAddingTracks) {
-    playerStatus = 'READING SIGNALS...';
   }
 
   return (
@@ -592,7 +679,6 @@ function App() {
              */}
             <h1 className="drain-wordmark" aria-label="DRAIN" />
           </div>
-          <p className="player-status">{playerStatus}</p>
         </header>
 
         <NowPlayingPanel
@@ -622,7 +708,10 @@ function App() {
         />
 
         <EqualizerPanel
+          isEqualizerEnabled={isEqualizerEnabled}
           equalizerGains={equalizerGains}
+          onToggle={handleEqualizerToggleBtnClick}
+          onPresetChange={handleEqualizerPresetChange}
           onGainChange={handleEqualizerGainChange}
           onReset={handleResetEqualizerBtnClick}
         />
@@ -636,6 +725,7 @@ function App() {
           onRemove={handleRemoveTrackBtnClick}
           onClear={handleClearPlaylistBtnClick}
           onTrackClick={handlePlaylistTrackClick}
+          onMoveTrack={handleMovePlaylistTrack}
           onDragEnter={handleDragEnter}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
