@@ -126,11 +126,7 @@ function PlaylistPanel({
 
   return (
     <section className="playlist-panel">
-      <div className="panel-heading playlist-heading">
-        <span className="playlist-window-marks" aria-hidden="true">
-          □ ▣ ×
-        </span>
-      </div>
+      <div className="panel-heading playlist-heading" />
 
       <div
         className={`playlist-body ${dropZoneClassName}`}
@@ -182,7 +178,6 @@ function PlaylistPanel({
 
         <div className="playlist-side-art" aria-hidden="true">
           <span className="playlist-side-chain playlist-side-chain-right" />
-          <span className="playlist-heart">♥</span>
         </div>
       </div>
 
@@ -207,13 +202,9 @@ function PlaylistPanel({
             disabled={currentTrackIndex === -1}
             onClick={onRemove}
           >
-            REM
+            REMOVE
           </button>
 
-          {/* These two visual controls reserve space for later playlist tools. */}
-          <button className="playlist-action" type="button" disabled>
-            SEL
-          </button>
           <button
             className="playlist-action"
             type="button"
@@ -222,25 +213,13 @@ function PlaylistPanel({
             disabled={playlist.length === 0}
             onClick={onClear}
           >
-            MISC
+            CLEAR
           </button>
         </div>
 
         <div className="playlist-footer-summary" aria-live="polite">
           {playlistSummary}
         </div>
-
-        <label className="playlist-action playlist-load-action">
-          LOAD ▼
-          <input
-            className="track-file-input"
-            type="file"
-            accept="audio/*"
-            multiple
-            disabled={isAddingTracks}
-            onChange={onFileChange}
-          />
-        </label>
       </div>
     </section>
   );
