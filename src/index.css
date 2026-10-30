@@ -525,17 +525,18 @@ input {
 
 .audio-visualizer {
   width: 100%;
-  height: 56px;
+  height: 46px;
   align-self: end;
-  border-bottom: 1px solid #8dbac7;
-  background: linear-gradient(180deg, transparent, rgb(119 198 219 / 8%));
+  border-bottom: 1px solid #8c8583;
+  background: linear-gradient(180deg, transparent, rgb(207 226 230 / 6%));
 }
 
 .control-column {
   min-width: 0;
   padding: 7px 9px 4px;
   display: grid;
-  grid-template-rows: 43px minmax(0, 1fr) 18px;
+  /* The first row is tall enough for the song, artist, and album lines. */
+  grid-template-rows: 54px minmax(0, 1fr) 18px;
   background-color: #030405;
   background-image:
     radial-gradient(
@@ -574,6 +575,7 @@ input {
 .track-artist,
 .track-album {
   margin: 0;
+  line-height: 1.1;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1283,15 +1285,15 @@ label.playlist-action {
 
 .playlist-track-active {
   color: #041015;
-  background: linear-gradient(90deg, #bfeeff, #75c8eb 72%, #f0f0ea);
+  background: linear-gradient(90deg, #e7eff0, #b9cbcf 72%, #f3f3ee);
   animation: active-track-flicker 3.2s linear infinite;
   box-shadow:
-    0 0 var(--active-track-glow) rgb(117 211 250 / 62%),
+    0 0 var(--active-track-glow) rgb(205 224 228 / 52%),
     inset 0 0 6px rgb(255 255 255 / 38%);
 }
 
 .playlist-track-active span:last-child {
-  color: #193a48;
+  color: #2b3b3e;
 }
 
 .playlist-side-chain {

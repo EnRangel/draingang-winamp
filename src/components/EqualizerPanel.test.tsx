@@ -5,17 +5,13 @@ import { describe, expect, it, vi } from 'vitest';
 import EqualizerPanel from './EqualizerPanel';
 
 describe('EqualizerPanel', () => {
-  it('shows each saved gain and reports slider changes', () => {
-    const handleBassChange = vi.fn();
+  it('shows ten independent gains and reports which slider changed', () => {
+    const handleGainChange = vi.fn();
 
     render(
       <EqualizerPanel
-        bassGain={4}
-        midGain={0}
-        trebleGain={-2}
-        onBassChange={handleBassChange}
-        onMidChange={vi.fn()}
-        onTrebleChange={vi.fn()}
+        equalizerGains={[4, 0, 0, 0, 0, 0, 0, 0, 0, -2]}
+        onGainChange={handleGainChange}
         onReset={vi.fn()}
       />,
     );
@@ -24,11 +20,14 @@ describe('EqualizerPanel', () => {
     expect(screen.getByText('60')).toBeInTheDocument();
     expect(screen.getByText('16K')).toBeInTheDocument();
 
-    fireEvent.change(screen.getByRole('slider', { name: '60 Hz bass 4' }), {
+    const firstSlider = screen.getByRole('slider', { name: '60 Hz gain 4' });
+
+    fireEvent.change(firstSlider, {
       target: { value: '7' },
     });
 
-    expect(handleBassChange).toHaveBeenCalledOnce();
+    expect(handleGainChange).toHaveBeenCalledOnce();
+    expect(handleGainChange.mock.calls[0][0]).toBe(0);
   });
 
   it('reports a reset-button click', async () => {
@@ -37,12 +36,8 @@ describe('EqualizerPanel', () => {
 
     render(
       <EqualizerPanel
-        bassGain={0}
-        midGain={0}
-        trebleGain={0}
-        onBassChange={vi.fn()}
-        onMidChange={vi.fn()}
-        onTrebleChange={vi.fn()}
+        equalizerGains={[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}
+        onGainChange={vi.fn()}
         onReset={handleReset}
       />,
     );

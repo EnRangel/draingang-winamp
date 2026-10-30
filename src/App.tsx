@@ -19,6 +19,7 @@ import PlaylistPanel from './components/PlaylistPanel';
 import WindowControls from './components/WindowControls';
 import { useAudioReactivity } from './hooks/useAudioReactivity';
 import { usePlayerSettings } from './hooks/usePlayerSettings';
+import { EQUALIZER_BANDS } from './playerTypes';
 import { findNextTrackIndex, isSupportedAudioFile } from './playerUtils';
 
 function App() {
@@ -57,12 +58,8 @@ function App() {
     setIsShuffleEnabled,
     repeatMode,
     setRepeatMode,
-    bassGain,
-    setBassGain,
-    midGain,
-    setMidGain,
-    trebleGain,
-    setTrebleGain,
+    equalizerGains,
+    setEqualizerGains,
   } = usePlayerSettings();
 
   useAudioReactivity(analyserNode, playerSkin);
@@ -82,13 +79,9 @@ function App() {
     const engine = audioEngine.current;
 
     if (engine !== null) {
-      applyEqualizerGains(engine, {
-        bass: bassGain,
-        mid: midGain,
-        treble: trebleGain,
-      });
+      applyEqualizerGains(engine, equalizerGains);
     }
-  }, [volume, isMuted, bassGain, midGain, trebleGain]);
+  }, [volume, isMuted, equalizerGains]);
 
   /*
    * Returning a function from an effect creates cleanup work. React runs this
@@ -177,11 +170,11 @@ function App() {
       return;
     }
 
-    const engine = await ensureAudioEngine(audioElement, audioEngine.current, {
-      bass: bassGain,
-      mid: midGain,
-      treble: trebleGain,
-    });
+    const engine = await ensureAudioEngine(
+      audioElement,
+      audioEngine.current,
+      equalizerGains,
+    );
 
     audioEngine.current = engine;
     setAnalyserNode(engine.analyser);
@@ -320,22 +313,22 @@ function App() {
     }
   }
 
-  function handleBassGainChange(event: ChangeEvent<HTMLInputElement>) {
-    setBassGain(Number(event.target.value));
-  }
-
-  function handleMidGainChange(event: ChangeEvent<HTMLInputElement>) {
-    setMidGain(Number(event.target.value));
-  }
-
-  function handleTrebleGainChange(event: ChangeEvent<HTMLInputElement>) {
-    setTrebleGain(Number(event.target.value));
+  function handleEqualizerGainChange(
+    bandIndex: number,
+    event: ChangeEvent<HTMLInputElement>,
+  ) {
+    /*
+     * slice() copies the array. React state should be replaced with a new array
+     * instead of changing the old array directly.
+     */
+    const updatedGains = equalizerGains.slice();
+    updatedGains[bandIndex] = Number(event.target.value);
+    setEqualizerGains(updatedGains);
   }
 
   function handleResetEqualizerBtnClick() {
-    setBassGain(0);
-    setMidGain(0);
-    setTrebleGain(0);
+    const resetGains = EQUALIZER_BANDS.map(() => 0);
+    setEqualizerGains(resetGains);
   }
 
   function handleMuteBtnClick() {
@@ -629,12 +622,8 @@ function App() {
         />
 
         <EqualizerPanel
-          bassGain={bassGain}
-          midGain={midGain}
-          trebleGain={trebleGain}
-          onBassChange={handleBassGainChange}
-          onMidChange={handleMidGainChange}
-          onTrebleChange={handleTrebleGainChange}
+          equalizerGains={equalizerGains}
+          onGainChange={handleEqualizerGainChange}
           onReset={handleResetEqualizerBtnClick}
         />
 
