@@ -93,7 +93,7 @@ function EqualizerPanel({
         </div>
 
         <div className="equalizer-art" aria-hidden="true">
-          <span className="butterfly-mark">ƸӜƷ</span>
+          <span className="equalizer-heart-mark" />
         </div>
       </div>
     </section>
