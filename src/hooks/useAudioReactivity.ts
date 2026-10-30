@@ -53,7 +53,7 @@ export function useAudioReactivity(
       activeSkin.style.setProperty('--bass-flash', bassFlash.toFixed(3));
       activeSkin.style.setProperty(
         '--equalizer-breath-opacity',
-        (0.24 + smoothedEnergy * 0.48).toFixed(3),
+        (0.32 + smoothedEnergy * 0.72).toFixed(3),
       );
       activeSkin.style.setProperty(
         '--equalizer-breath-scale',
@@ -65,11 +65,7 @@ export function useAudioReactivity(
       );
       activeSkin.style.setProperty(
         '--playlist-red-opacity',
-        (0.28 + bassFlash * 0.22).toFixed(3),
-      );
-      activeSkin.style.setProperty(
-        '--bass-overlay-opacity',
-        (bassFlash * 0.18).toFixed(3),
+        (0.36 + bassFlash * 0.35).toFixed(3),
       );
 
       // requestAnimationFrame runs once before each screen repaint.
@@ -86,7 +82,6 @@ export function useAudioReactivity(
       activeSkin.style.removeProperty('--equalizer-breath-scale');
       activeSkin.style.removeProperty('--active-track-glow');
       activeSkin.style.removeProperty('--playlist-red-opacity');
-      activeSkin.style.removeProperty('--bass-overlay-opacity');
     };
   }, [analyser, skinRef]);
 }
