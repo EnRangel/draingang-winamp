@@ -1,58 +1,21 @@
 import type { ChangeEvent } from 'react';
 
+import { EQUALIZER_BANDS, type EqualizerGains } from '../playerTypes';
+
 type EqualizerPanelProps = {
-  bassGain: number;
-  midGain: number;
-  trebleGain: number;
-  onBassChange: (event: ChangeEvent<HTMLInputElement>) => void;
-  onMidChange: (event: ChangeEvent<HTMLInputElement>) => void;
-  onTrebleChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  equalizerGains: EqualizerGains;
+  onGainChange: (
+    bandIndex: number,
+    event: ChangeEvent<HTMLInputElement>,
+  ) => void;
   onReset: () => void;
 };
 
 function EqualizerPanel({
-  bassGain,
-  midGain,
-  trebleGain,
-  onBassChange,
-  onMidChange,
-  onTrebleChange,
+  equalizerGains,
+  onGainChange,
   onReset,
 }: EqualizerPanelProps) {
-  /*
-   * The reference has ten narrow faders. For now, those faders share our
-   * existing three audio filters in groups. This keeps the audio code simple:
-   * the low faders control bass, the middle faders control mids, and the high
-   * faders control treble. We can make all ten independent in a later step.
-   */
-  const equalizerBands = [
-    { label: '60', group: 'bass', gain: bassGain, onChange: onBassChange },
-    { label: '170', group: 'bass', gain: bassGain, onChange: onBassChange },
-    { label: '310', group: 'bass', gain: bassGain, onChange: onBassChange },
-    { label: '600', group: 'mid', gain: midGain, onChange: onMidChange },
-    { label: '1K', group: 'mid', gain: midGain, onChange: onMidChange },
-    { label: '3K', group: 'mid', gain: midGain, onChange: onMidChange },
-    { label: '6K', group: 'mid', gain: midGain, onChange: onMidChange },
-    {
-      label: '12K',
-      group: 'treble',
-      gain: trebleGain,
-      onChange: onTrebleChange,
-    },
-    {
-      label: '14K',
-      group: 'treble',
-      gain: trebleGain,
-      onChange: onTrebleChange,
-    },
-    {
-      label: '16K',
-      group: 'treble',
-      gain: trebleGain,
-      onChange: onTrebleChange,
-    },
-  ];
-
   return (
     <section className="equalizer-panel">
       <div className="panel-heading equalizer-heading">
@@ -76,16 +39,16 @@ function EqualizerPanel({
 
         <div className="equalizer-bands">
           {/* map() creates one matching slider for every item in the array. */}
-          {equalizerBands.map((band) => (
+          {EQUALIZER_BANDS.map((band, bandIndex) => (
             <label className="equalizer-fader" key={band.label}>
               <input
-                aria-label={`${band.label} Hz ${band.group} ${band.gain}`}
+                aria-label={`${band.label} Hz gain ${equalizerGains[bandIndex]}`}
                 type="range"
                 min="-12"
                 max="12"
                 step="1"
-                value={band.gain}
-                onChange={band.onChange}
+                value={equalizerGains[bandIndex]}
+                onChange={(event) => onGainChange(bandIndex, event)}
               />
               <span>{band.label}</span>
             </label>

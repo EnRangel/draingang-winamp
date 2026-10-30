@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react';
 
-import type { RepeatMode } from '../playerTypes';
+import {
+  EQUALIZER_BANDS,
+  type EqualizerGains,
+  type RepeatMode,
+} from '../playerTypes';
 
 function loadSavedNumber(
   settingName: string,
@@ -41,6 +45,17 @@ function loadSavedRepeatMode(): RepeatMode {
   return 'off';
 }
 
+function loadSavedEqualizerGains(): EqualizerGains {
+  const savedGains: number[] = [];
+
+  for (const band of EQUALIZER_BANDS) {
+    const settingName = 'drainamp-eq-' + String(band.frequency);
+    savedGains.push(loadSavedNumber(settingName, 0, -12, 12));
+  }
+
+  return savedGains;
+}
+
 /*
  * A custom hook is a reusable function whose name begins with "use". It can
  * contain React state and effects while keeping App.tsx focused on coordination.
@@ -56,14 +71,8 @@ export function usePlayerSettings() {
     loadSavedBoolean('drainamp-shuffle'),
   );
   const [repeatMode, setRepeatMode] = useState<RepeatMode>(loadSavedRepeatMode);
-  const [bassGain, setBassGain] = useState(() =>
-    loadSavedNumber('drainamp-eq-bass', 0, -12, 12),
-  );
-  const [midGain, setMidGain] = useState(() =>
-    loadSavedNumber('drainamp-eq-mid', 0, -12, 12),
-  );
-  const [trebleGain, setTrebleGain] = useState(() =>
-    loadSavedNumber('drainamp-eq-treble', 0, -12, 12),
+  const [equalizerGains, setEqualizerGains] = useState<EqualizerGains>(
+    loadSavedEqualizerGains,
   );
 
   useEffect(() => {
@@ -71,18 +80,16 @@ export function usePlayerSettings() {
     localStorage.setItem('drainamp-muted', String(isMuted));
     localStorage.setItem('drainamp-shuffle', String(isShuffleEnabled));
     localStorage.setItem('drainamp-repeat', repeatMode);
-    localStorage.setItem('drainamp-eq-bass', String(bassGain));
-    localStorage.setItem('drainamp-eq-mid', String(midGain));
-    localStorage.setItem('drainamp-eq-treble', String(trebleGain));
-  }, [
-    volume,
-    isMuted,
-    isShuffleEnabled,
-    repeatMode,
-    bassGain,
-    midGain,
-    trebleGain,
-  ]);
+    for (
+      let bandIndex = 0;
+      bandIndex < EQUALIZER_BANDS.length;
+      bandIndex += 1
+    ) {
+      const frequency = EQUALIZER_BANDS[bandIndex].frequency;
+      const settingName = 'drainamp-eq-' + String(frequency);
+      localStorage.setItem(settingName, String(equalizerGains[bandIndex]));
+    }
+  }, [volume, isMuted, isShuffleEnabled, repeatMode, equalizerGains]);
 
   return {
     volume,
@@ -93,11 +100,7 @@ export function usePlayerSettings() {
     setIsShuffleEnabled,
     repeatMode,
     setRepeatMode,
-    bassGain,
-    setBassGain,
-    midGain,
-    setMidGain,
-    trebleGain,
-    setTrebleGain,
+    equalizerGains,
+    setEqualizerGains,
   };
 }

@@ -1,8 +1,28 @@
 // RepeatMode only allows these three exact string values.
 export type RepeatMode = 'off' | 'all' | 'one';
 
-export type EqualizerGains = {
-  bass: number;
-  mid: number;
-  treble: number;
+export type EqualizerBand = {
+  label: string;
+  frequency: number;
 };
+
+/*
+ * Each object describes one visible slider and its matching audio frequency.
+ * Keeping this list in one file prevents the interface and audio engine from
+ * accidentally using different band orders.
+ */
+export const EQUALIZER_BANDS: EqualizerBand[] = [
+  { label: '60', frequency: 60 },
+  { label: '170', frequency: 170 },
+  { label: '310', frequency: 310 },
+  { label: '600', frequency: 600 },
+  { label: '1K', frequency: 1000 },
+  { label: '3K', frequency: 3000 },
+  { label: '6K', frequency: 6000 },
+  { label: '12K', frequency: 12000 },
+  { label: '14K', frequency: 14000 },
+  { label: '16K', frequency: 16000 },
+];
+
+// The number at each array position belongs to the band at the same position.
+export type EqualizerGains = number[];
