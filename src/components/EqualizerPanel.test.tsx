@@ -10,7 +10,10 @@ describe('EqualizerPanel', () => {
 
     render(
       <EqualizerPanel
+        isEqualizerEnabled
         equalizerGains={[4, 0, 0, 0, 0, 0, 0, 0, 0, -2]}
+        onToggle={vi.fn()}
+        onPresetChange={vi.fn()}
         onGainChange={handleGainChange}
         onReset={vi.fn()}
       />,
@@ -36,7 +39,10 @@ describe('EqualizerPanel', () => {
 
     render(
       <EqualizerPanel
+        isEqualizerEnabled
         equalizerGains={[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}
+        onToggle={vi.fn()}
+        onPresetChange={vi.fn()}
         onGainChange={vi.fn()}
         onReset={handleReset}
       />,
@@ -45,5 +51,31 @@ describe('EqualizerPanel', () => {
     await user.click(screen.getByRole('button', { name: 'RESET' }));
 
     expect(handleReset).toHaveBeenCalledOnce();
+  });
+
+  it('reports equalizer toggles and preset selections', async () => {
+    const user = userEvent.setup();
+    const handleToggle = vi.fn();
+    const handlePresetChange = vi.fn();
+
+    render(
+      <EqualizerPanel
+        isEqualizerEnabled
+        equalizerGains={[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}
+        onToggle={handleToggle}
+        onPresetChange={handlePresetChange}
+        onGainChange={vi.fn()}
+        onReset={vi.fn()}
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'ON' }));
+    await user.selectOptions(
+      screen.getByRole('combobox', { name: 'Equalizer preset' }),
+      'DRAIN',
+    );
+
+    expect(handleToggle).toHaveBeenCalledOnce();
+    expect(handlePresetChange).toHaveBeenCalledWith('DRAIN');
   });
 });

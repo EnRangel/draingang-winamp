@@ -71,6 +71,12 @@ export function usePlayerSettings() {
     loadSavedBoolean('drainamp-shuffle'),
   );
   const [repeatMode, setRepeatMode] = useState<RepeatMode>(loadSavedRepeatMode);
+  const [isEqualizerEnabled, setIsEqualizerEnabled] = useState(() => {
+    const savedValue = localStorage.getItem('drainamp-eq-enabled');
+
+    // Keep the equalizer on for new users who do not have a saved value yet.
+    return savedValue === null || savedValue === 'true';
+  });
   const [equalizerGains, setEqualizerGains] = useState<EqualizerGains>(
     loadSavedEqualizerGains,
   );
@@ -80,6 +86,7 @@ export function usePlayerSettings() {
     localStorage.setItem('drainamp-muted', String(isMuted));
     localStorage.setItem('drainamp-shuffle', String(isShuffleEnabled));
     localStorage.setItem('drainamp-repeat', repeatMode);
+    localStorage.setItem('drainamp-eq-enabled', String(isEqualizerEnabled));
     for (
       let bandIndex = 0;
       bandIndex < EQUALIZER_BANDS.length;
@@ -89,7 +96,14 @@ export function usePlayerSettings() {
       const settingName = 'drainamp-eq-' + String(frequency);
       localStorage.setItem(settingName, String(equalizerGains[bandIndex]));
     }
-  }, [volume, isMuted, isShuffleEnabled, repeatMode, equalizerGains]);
+  }, [
+    volume,
+    isMuted,
+    isShuffleEnabled,
+    repeatMode,
+    isEqualizerEnabled,
+    equalizerGains,
+  ]);
 
   return {
     volume,
@@ -100,6 +114,8 @@ export function usePlayerSettings() {
     setIsShuffleEnabled,
     repeatMode,
     setRepeatMode,
+    isEqualizerEnabled,
+    setIsEqualizerEnabled,
     equalizerGains,
     setEqualizerGains,
   };
