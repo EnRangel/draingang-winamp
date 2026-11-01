@@ -1308,7 +1308,8 @@ label.playlist-action {
   height: 100%;
   margin: 0;
   padding: 0;
-  overflow-y: auto;
+  /* Always show the bar so the playlist keeps its old Winamp-style frame. */
+  overflow-y: scroll;
   list-style: none;
   background:
     repeating-linear-gradient(
@@ -1317,6 +1318,51 @@ label.playlist-action {
       rgb(255 255 255 / 4%) 21px
     ),
     rgb(0 2 4 / 58%);
+}
+
+/* Electron uses Chromium, so these rules control its playlist scrollbar. */
+.playlist::-webkit-scrollbar {
+  width: 18px;
+  background: #050607;
+}
+
+.playlist::-webkit-scrollbar-track {
+  border: 2px inset #686964;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 9px,
+      rgb(255 255 255 / 7%) 10px,
+      transparent 11px
+    ),
+    linear-gradient(90deg, #030405, #17191a 48%, #050606);
+  box-shadow: inset 0 0 5px #000;
+}
+
+.playlist::-webkit-scrollbar-thumb {
+  min-height: 38px;
+  border: 2px outset #e2e2dc;
+  border-radius: 0;
+  background-color: #a7a8a3;
+  /* This is a vertical version of the same dirty art used by the tabs. */
+  background-image: url('./assets/dirty-silver-scrollbar.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  /* Zoom past the asset's black margins and display only its metal strip. */
+  background-size: 720% 100%;
+  box-shadow:
+    inset 2px 0 rgb(255 255 255 / 40%),
+    inset -2px 0 rgb(0 0 0 / 50%),
+    0 0 4px rgb(220 238 242 / 28%);
+}
+
+.playlist::-webkit-scrollbar-thumb:hover {
+  filter: brightness(1.15);
+}
+
+.playlist::-webkit-scrollbar-button,
+.playlist::-webkit-scrollbar-corner {
+  display: none;
 }
 
 .playlist-empty {
