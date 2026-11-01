@@ -54,16 +54,15 @@ app.whenReady().then(() => {
    * Listen for the message sent by preload.ts.
    * `event.sender` identifies the page that sent the message.
    */
-  ipcMain.on('window:minimize', (event) => {
+  ipcMain.handle('window:minimize', (event) => {
     const senderWindow = BrowserWindow.fromWebContents(event.sender);
     if (senderWindow) {
       senderWindow.minimize();
     }
   });
 
-  ipcMain.on('window:close', (event) => {
+  ipcMain.handle('window:close', (event) => {
     const senderWindow = BrowserWindow.fromWebContents(event.sender);
-    // `?.` calls close only if Electron found the sender's window.
     if (senderWindow) {
       senderWindow.close();
     }

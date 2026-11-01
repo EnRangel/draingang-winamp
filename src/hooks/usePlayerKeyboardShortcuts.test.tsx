@@ -50,4 +50,30 @@ describe('usePlayerKeyboardShortcuts', () => {
     expect(onSeekForward).not.toHaveBeenCalled();
     slider.remove();
   });
+
+  it('keeps seek and delete shortcuts working after a button is clicked', () => {
+    const onSeekBackward = vi.fn();
+    const onSeekForward = vi.fn();
+    const onRemoveTrack = vi.fn();
+    const playlistButton = document.createElement('button');
+    document.body.append(playlistButton);
+
+    renderHook(() =>
+      usePlayerKeyboardShortcuts({
+        onPlayPause: vi.fn(),
+        onSeekBackward,
+        onSeekForward,
+        onRemoveTrack,
+      }),
+    );
+
+    fireEvent.keyDown(playlistButton, { code: 'ArrowLeft' });
+    fireEvent.keyDown(playlistButton, { code: 'ArrowRight' });
+    fireEvent.keyDown(playlistButton, { code: 'Delete' });
+
+    expect(onSeekBackward).toHaveBeenCalledOnce();
+    expect(onSeekForward).toHaveBeenCalledOnce();
+    expect(onRemoveTrack).toHaveBeenCalledOnce();
+    playlistButton.remove();
+  });
 });
