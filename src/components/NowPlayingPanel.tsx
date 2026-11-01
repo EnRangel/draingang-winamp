@@ -215,6 +215,7 @@ function NowPlayingPanel({
           <input
             className="volume-slider"
             type="range"
+            aria-label="Volume"
             min="0"
             max="100"
             step="1"

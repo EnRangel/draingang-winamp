@@ -4,8 +4,8 @@ A learning-focused desktop music player inspired by classic Winamp skins and
 internet-grunge artwork.
 
 Drainamp currently includes local audio playback, metadata and album artwork,
-a reorderable playlist, a live visualizer, and an independent 10-band
-equalizer with presets.
+a playlist that returns after reopening the app, volume and mute controls, a
+live visualizer, and an independent 10-band equalizer with presets.
 
 ### Run the project
 
@@ -16,8 +16,9 @@ npm start
 The important learning files are:
 
 - `src/main.ts`: creates and manages the desktop window.
-- `src/preload.ts`: safely exposes the allowed window controls to React.
+- `src/preload.ts`: safely exposes the allowed file and window actions.
 - `src/App.tsx`: coordinates playback, the playlist, and player settings.
+- `src/playlistStorage.ts`: saves the playlist's permanent file references.
 - `src/components/`: contains the three smaller player panels.
 - `src/audioEngine.ts`: builds the visualizer and 10-band audio filter chain.
 - `src/index.css`: contains the Winamp-inspired skin.

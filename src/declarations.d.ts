@@ -13,6 +13,8 @@ declare module '*.png' {
  */
 interface Window {
   electronAPI: {
+    getFilePath: (file: File) => string;
+    readAudioFile: (filePath: string) => Promise<ArrayBuffer>;
     minimizeWindow: () => void;
     // This function takes no arguments and returns no value.
     closeWindow: () => void;

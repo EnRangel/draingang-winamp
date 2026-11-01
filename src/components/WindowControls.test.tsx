@@ -8,6 +8,8 @@ describe('WindowControls', () => {
   beforeEach(() => {
     // Electron normally supplies this object through preload.ts.
     window.electronAPI = {
+      getFilePath: vi.fn(),
+      readAudioFile: vi.fn(),
       minimizeWindow: vi.fn(),
       closeWindow: vi.fn(),
     };

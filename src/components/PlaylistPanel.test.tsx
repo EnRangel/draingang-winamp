@@ -8,6 +8,8 @@ import PlaylistPanel from './PlaylistPanel';
 const tracks: Track[] = [
   {
     fileName: 'glass-wings.mp3',
+    filePath: 'C:\\Music\\glass-wings.mp3',
+    fileType: 'audio/mpeg',
     title: 'Glass Wings',
     artist: 'Drain Artist',
     album: 'Test Album',
@@ -17,6 +19,8 @@ const tracks: Track[] = [
   },
   {
     fileName: 'empty-orbits.mp3',
+    filePath: 'C:\\Music\\empty-orbits.mp3',
+    fileType: 'audio/mpeg',
     title: 'Empty Orbits',
     artist: 'Drain Artist',
     album: 'Test Album',
