@@ -1,10 +1,11 @@
 function WindowControls() {
   function handleMinimizeClick() {
-    window.electronAPI.minimizeWindow();
+    // void starts the asynchronous request without making React wait for it.
+    void window.electronAPI.minimizeWindow();
   }
 
   function handleCloseClick() {
-    window.electronAPI.closeWindow();
+    void window.electronAPI.closeWindow();
   }
 
   return (

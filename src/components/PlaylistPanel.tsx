@@ -13,6 +13,7 @@ type PlaylistPanelProps = {
   onRemove: () => void;
   onClear: () => void;
   onTrackClick: (trackIndex: number) => void;
+  onTrackDoubleClick: (trackIndex: number) => void;
   onMoveTrack: (fromIndex: number, toIndex: number) => void;
   onDragEnter: (event: DragEvent<HTMLDivElement>) => void;
   onDragOver: (event: DragEvent<HTMLDivElement>) => void;
@@ -67,6 +68,7 @@ function PlaylistPanel({
   onRemove,
   onClear,
   onTrackClick,
+  onTrackDoubleClick,
   onMoveTrack,
   onDragEnter,
   onDragOver,
@@ -166,6 +168,7 @@ function PlaylistPanel({
                   type="button"
                   title={track.fileName}
                   onClick={() => onTrackClick(trackIndex)}
+                  onDoubleClick={() => onTrackDoubleClick(trackIndex)}
                 >
                   <span>{trackIndex + 1}.</span>
                   <span>{track.title}</span>

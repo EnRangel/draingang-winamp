@@ -10,8 +10,8 @@ describe('WindowControls', () => {
     window.electronAPI = {
       getFilePath: vi.fn(),
       readAudioFile: vi.fn(),
-      minimizeWindow: vi.fn(),
-      closeWindow: vi.fn(),
+      minimizeWindow: vi.fn().mockResolvedValue(undefined),
+      closeWindow: vi.fn().mockResolvedValue(undefined),
     };
   });
 

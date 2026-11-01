@@ -103,8 +103,10 @@ function NowPlayingPanel({
           <div className="artwork-frame">
             {artworkContent}
             <span className="artwork-scan-line" />
-            <span className="artwork-corner artwork-corner-top" />
-            <span className="artwork-corner artwork-corner-bottom" />
+            <span className="artwork-corner artwork-corner-top-left" />
+            <span className="artwork-corner artwork-corner-top-right" />
+            <span className="artwork-corner artwork-corner-bottom-left" />
+            <span className="artwork-corner artwork-corner-bottom-right" />
           </div>
         </div>
 
@@ -205,7 +207,12 @@ function NowPlayingPanel({
             {shuffleButtonLabel}
           </button>
 
-          <button className="mode-button" type="button" onClick={onRepeat}>
+          <button
+            className="mode-button"
+            type="button"
+            title="REP ONE repeats the current track"
+            onClick={onRepeat}
+          >
             {repeatButtonLabel}
           </button>
         </div>

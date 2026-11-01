@@ -458,9 +458,45 @@ function App() {
   function handlePlaylistTrackClick(trackIndex: number) {
     const selectedTrack = playlist[trackIndex];
 
-    if (selectedTrack !== undefined) {
-      loadTrack(selectedTrack, trackIndex, false);
+    if (selectedTrack === undefined || trackIndex === currentTrackIndex) {
+      return;
     }
+
+    // Avoid reloading the current file, which would reset its displayed time.
+    loadTrack(selectedTrack, trackIndex, false);
+  }
+
+  async function handlePlaylistTrackDoubleClick(trackIndex: number) {
+    const selectedTrack = playlist[trackIndex];
+
+    if (selectedTrack === undefined) {
+      return;
+    }
+
+    /*
+     * A double-click also produces normal click events. If those clicks have
+     * already loaded this song, start the existing audio element directly.
+     */
+    if (currentTrackIndex === trackIndex) {
+      const audioElement = audioPlayer.current;
+
+      if (audioElement === null) {
+        return;
+      }
+
+      try {
+        await ensureAudioGraph();
+        await audioElement.play();
+        setIsPlaying(true);
+      } catch (error) {
+        console.error('The double-clicked song could not play.', error);
+      }
+
+      return;
+    }
+
+    // onCanPlay will begin playback after the newly selected file is ready.
+    loadTrack(selectedTrack, trackIndex, true);
   }
 
   function handlePreviousBtnClick() {
@@ -818,6 +854,7 @@ function App() {
           onRemove={handleRemoveTrackBtnClick}
           onClear={handleClearPlaylistBtnClick}
           onTrackClick={handlePlaylistTrackClick}
+          onTrackDoubleClick={handlePlaylistTrackDoubleClick}
           onMoveTrack={handleMovePlaylistTrack}
           onDragEnter={handleDragEnter}
           onDragOver={handleDragOver}

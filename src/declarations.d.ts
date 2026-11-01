@@ -15,8 +15,8 @@ interface Window {
   electronAPI: {
     getFilePath: (file: File) => string;
     readAudioFile: (filePath: string) => Promise<ArrayBuffer>;
-    minimizeWindow: () => void;
-    // This function takes no arguments and returns no value.
-    closeWindow: () => void;
+    minimizeWindow: () => Promise<void>;
+    // Promise<void> means the request finishes later without returning data.
+    closeWindow: () => Promise<void>;
   };
 }

@@ -35,6 +35,7 @@ function renderPlaylist(
   currentTrackIndex: number,
   onTrackClick = vi.fn(),
   onMoveTrack = vi.fn(),
+  onTrackDoubleClick = vi.fn(),
 ) {
   return render(
     <PlaylistPanel
@@ -46,6 +47,7 @@ function renderPlaylist(
       onRemove={vi.fn()}
       onClear={vi.fn()}
       onTrackClick={onTrackClick}
+      onTrackDoubleClick={onTrackDoubleClick}
       onMoveTrack={onMoveTrack}
       onDragEnter={vi.fn()}
       onDragOver={vi.fn()}
@@ -81,6 +83,16 @@ describe('PlaylistPanel', () => {
     await user.click(screen.getByTitle('empty-orbits.mp3'));
 
     expect(handleTrackClick).toHaveBeenCalledWith(1);
+  });
+
+  it('reports which track the user double-clicks', async () => {
+    const user = userEvent.setup();
+    const handleTrackDoubleClick = vi.fn();
+    renderPlaylist(tracks, 0, vi.fn(), vi.fn(), handleTrackDoubleClick);
+
+    await user.dblClick(screen.getByTitle('empty-orbits.mp3'));
+
+    expect(handleTrackDoubleClick).toHaveBeenCalledWith(1);
   });
 
   it('disables remove and clear when the playlist is empty', () => {

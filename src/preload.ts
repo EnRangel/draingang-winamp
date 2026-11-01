@@ -18,13 +18,13 @@ contextBridge.exposeInMainWorld('electronAPI', {
     return ipcRenderer.invoke('playlist:read-audio-file', filePath);
   },
 
-  minimizeWindow: () => {
-    ipcRenderer.send('window:minimize');
+  minimizeWindow: async () => {
+    // invoke() confirms that main.ts received the window request.
+    await ipcRenderer.invoke('window:minimize');
   },
 
-  closeWindow: () => {
+  closeWindow: async () => {
     // IPC means inter-process communication.
-    // This sends a named message to Electron's main process.
-    ipcRenderer.send('window:close');
+    await ipcRenderer.invoke('window:close');
   },
 });
