@@ -1,6 +1,7 @@
 import type { ChangeEvent, DragEvent } from 'react';
 
 import type { Track } from '../audioMetadata';
+import MissingTracksWarning from './MissingTracksWarning';
 
 const PLAYLIST_DRAG_TYPE = 'application/x-drainamp-track-index';
 
@@ -9,6 +10,8 @@ type PlaylistPanelProps = {
   currentTrackIndex: number;
   isDraggingFile: boolean;
   isAddingTracks: boolean;
+  missingTrackCount: number;
+  onDismissMissingTracksWarning: () => void;
   onFileChange: (event: ChangeEvent<HTMLInputElement>) => void;
   onRemove: () => void;
   onClear: () => void;
@@ -64,6 +67,8 @@ function PlaylistPanel({
   currentTrackIndex,
   isDraggingFile,
   isAddingTracks,
+  missingTrackCount,
+  onDismissMissingTracksWarning,
   onFileChange,
   onRemove,
   onClear,
@@ -115,6 +120,10 @@ function PlaylistPanel({
     dropZoneClassName += ' drop-zone-active';
   }
 
+  if (missingTrackCount > 0) {
+    dropZoneClassName += ' playlist-body-has-warning';
+  }
+
   let dropZoneText = 'DROP AUDIO SIGNALS HERE';
   if (isAddingTracks) {
     dropZoneText = 'READING METADATA...';
@@ -137,6 +146,11 @@ function PlaylistPanel({
         onDragLeave={onDragLeave}
         onDrop={onDrop}
       >
+        <MissingTracksWarning
+          missingTrackCount={missingTrackCount}
+          onDismiss={onDismissMissingTracksWarning}
+        />
+
         <span
           className="playlist-side-chain playlist-side-chain-left"
           aria-hidden="true"
