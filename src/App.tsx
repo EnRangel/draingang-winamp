@@ -22,6 +22,11 @@ import { usePlayerKeyboardShortcuts } from './hooks/usePlayerKeyboardShortcuts';
 import { usePlayerSettings } from './hooks/usePlayerSettings';
 import { EQUALIZER_BANDS, EQUALIZER_PRESETS } from './playerTypes';
 import { findNextTrackIndex, isSupportedAudioFile } from './playerUtils';
+import {
+  loadSavedPlaylist,
+  savePlaylist,
+  type SavedTrackReference,
+} from './playlistStorage';
 
 function App() {
   const audioPlayer = useRef<HTMLAudioElement | null>(null);
@@ -43,6 +48,7 @@ function App() {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [playlist, setPlaylist] = useState<Track[]>([]);
+  const [hasRestoredPlaylist, setHasRestoredPlaylist] = useState(false);
   // -1 means that the playlist does not have a selected track yet.
   const [currentTrackIndex, setCurrentTrackIndex] = useState(-1);
   const [playWhenReady, setPlayWhenReady] = useState(false);
@@ -93,6 +99,69 @@ function App() {
   }, [volume, isMuted, equalizerGains, isEqualizerEnabled]);
 
   /*
+   * This effect runs once when Drainamp opens. It rebuilds fresh blob URLs
+   * from the real song paths saved during the previous session.
+   */
+  useEffect(() => {
+    let didCancelRestore = false;
+
+    async function restorePlaylist() {
+      const savedReferences = loadSavedPlaylist();
+      const restoredTracks: Track[] = [];
+
+      if (savedReferences.length > 0) {
+        setIsAddingTracks(true);
+      }
+
+      for (const reference of savedReferences) {
+        try {
+          const restoredTrack = await createTrackFromSavedReference(reference);
+          restoredTracks.push(restoredTrack);
+        } catch (error) {
+          // A moved or deleted song is skipped instead of breaking the app.
+          console.warn('Could not restore ' + reference.fileName, error);
+        }
+      }
+
+      if (didCancelRestore) {
+        releaseRestoredTracks(restoredTracks);
+        return;
+      }
+
+      for (const track of restoredTracks) {
+        createdTrackSources.current.push(track.source);
+
+        if (track.artworkSource !== '') {
+          createdTrackSources.current.push(track.artworkSource);
+        }
+      }
+
+      setPlaylist(restoredTracks);
+      setIsAddingTracks(false);
+      setHasRestoredPlaylist(true);
+
+      const firstTrack = restoredTracks[0];
+
+      if (firstTrack !== undefined) {
+        loadTrack(firstTrack, 0, false);
+      }
+    }
+
+    void restorePlaylist();
+
+    return () => {
+      didCancelRestore = true;
+    };
+  }, []);
+
+  // Once restoration finishes, every playlist change is saved automatically.
+  useEffect(() => {
+    if (hasRestoredPlaylist) {
+      savePlaylist(playlist);
+    }
+  }, [playlist, hasRestoredPlaylist]);
+
+  /*
    * Returning a function from an effect creates cleanup work. React runs this
    * when the app closes, releasing any temporary file URLs still in memory.
    */
@@ -126,6 +195,29 @@ function App() {
     }
 
     createdTrackSources.current = remainingSources;
+  }
+
+  async function createTrackFromSavedReference(
+    reference: SavedTrackReference,
+  ): Promise<Track> {
+    const fileBytes = await window.electronAPI.readAudioFile(
+      reference.filePath,
+    );
+    const restoredFile = new File([fileBytes], reference.fileName, {
+      type: reference.fileType,
+    });
+
+    return createTrackFromFile(restoredFile, reference.filePath);
+  }
+
+  function releaseRestoredTracks(restoredTracks: Track[]) {
+    for (const track of restoredTracks) {
+      URL.revokeObjectURL(track.source);
+
+      if (track.artworkSource !== '') {
+        URL.revokeObjectURL(track.artworkSource);
+      }
+    }
   }
 
   function resetPlayer() {
@@ -468,7 +560,8 @@ function App() {
         }
 
         // Await keeps metadata parsing sequential so a large drop stays smooth.
-        const newTrack = await createTrackFromFile(selectedFile);
+        const filePath = window.electronAPI.getFilePath(selectedFile);
+        const newTrack = await createTrackFromFile(selectedFile, filePath);
         createdTrackSources.current.push(newTrack.source);
 
         if (newTrack.artworkSource !== '') {

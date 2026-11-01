@@ -3,6 +3,8 @@ import { parseBlob } from 'music-metadata';
 // This is the complete information Drainamp keeps for one playlist item.
 export type Track = {
   fileName: string;
+  filePath: string;
+  fileType: string;
   title: string;
   artist: string;
   album: string;
@@ -37,7 +39,10 @@ function removeFileExtension(fileName: string): string {
   return fileName.slice(0, lastDotPosition);
 }
 
-export async function createTrackFromFile(file: File): Promise<Track> {
+export async function createTrackFromFile(
+  file: File,
+  filePath: string,
+): Promise<Track> {
   // These fallback values still work when a song has no embedded ID3 tags.
   let title = removeFileExtension(file.name);
   let artist = 'Unknown Artist';
@@ -84,6 +89,8 @@ export async function createTrackFromFile(file: File): Promise<Track> {
 
   return {
     fileName: file.name,
+    filePath,
+    fileType: file.type,
     title,
     artist,
     album,

@@ -1,5 +1,6 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import started from 'electron-squirrel-startup';
+import { readFile } from 'node:fs/promises';
 // ipcMain receives messages in Electron’s main process.
 
 // Webpack creates these two values while it builds the application.
@@ -34,8 +35,7 @@ function createWindow(): void {
     hasShadow: false,
     title: 'Drainamp',
     webPreferences: {
-      // The preload file will become our safe bridge to desktop features.
-      // It is empty for now because Step 1 does not need filesystem access.
+      // The preload file is our limited bridge to desktop-only features.
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
     },
   });
@@ -67,6 +67,21 @@ app.whenReady().then(() => {
     if (senderWindow) {
       senderWindow.close();
     }
+  });
+
+  ipcMain.handle('playlist:read-audio-file', async (_event, filePath) => {
+    if (typeof filePath !== 'string' || filePath.trim() === '') {
+      throw new Error('Drainamp received an invalid audio file path.');
+    }
+
+    /*
+     * React cannot read an old local path by itself. The main process reads
+     * the song and sends its bytes back through our narrow preload bridge.
+     */
+    const fileContents = await readFile(filePath);
+
+    // Copy the Node Buffer into a plain ArrayBuffer that browsers understand.
+    return Uint8Array.from(fileContents).buffer;
   });
 
   createWindow();

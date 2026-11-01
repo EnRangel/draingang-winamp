@@ -1,10 +1,15 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
 import NowPlayingPanel from './NowPlayingPanel';
 
-function renderNowPlaying(isPlaying: boolean, onPlayPause = vi.fn()) {
+function renderNowPlaying(
+  isPlaying: boolean,
+  onPlayPause = vi.fn(),
+  onMute = vi.fn(),
+  onVolumeChange = vi.fn(),
+) {
   return render(
     <NowPlayingPanel
       artworkSource=""
@@ -26,10 +31,10 @@ function renderNowPlaying(isPlaying: boolean, onPlayPause = vi.fn()) {
       onPlayPause={onPlayPause}
       onStop={vi.fn()}
       onNext={vi.fn()}
-      onMute={vi.fn()}
+      onMute={onMute}
       onShuffle={vi.fn()}
       onRepeat={vi.fn()}
-      onVolumeChange={vi.fn()}
+      onVolumeChange={onVolumeChange}
     />,
   );
 }
@@ -86,5 +91,20 @@ describe('NowPlayingPanel', () => {
     );
 
     expect(screen.getByRole('button', { name: 'PAUSE' })).toBeInTheDocument();
+  });
+
+  it('reports mute clicks and volume changes', async () => {
+    const user = userEvent.setup();
+    const handleMute = vi.fn();
+    const handleVolumeChange = vi.fn();
+    renderNowPlaying(false, vi.fn(), handleMute, handleVolumeChange);
+
+    await user.click(screen.getByRole('button', { name: 'MUTE' }));
+    fireEvent.change(screen.getByRole('slider', { name: 'Volume' }), {
+      target: { value: '45' },
+    });
+
+    expect(handleMute).toHaveBeenCalledOnce();
+    expect(handleVolumeChange).toHaveBeenCalledOnce();
   });
 });
