@@ -22,8 +22,8 @@ function createWindow(): void {
   const mainWindow = new BrowserWindow({
     // These dimensions match the scaled player exactly, so Electron does not
     // leave unused black space around the interface.
-    width: 392,
-    height: 501,
+    width: 431,
+    height: 551,
     // Treat width and height as usable page space, not outer window borders.
     useContentSize: true,
     // Centering prevents a larger window from opening past the monitor edge.
