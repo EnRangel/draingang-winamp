@@ -312,11 +312,19 @@ input {
   box-shadow:
     inset 0 0 0 1px rgb(225 225 220 / 28%),
     inset 0 0 13px rgb(0 0 0 / 45%);
-  /* Keep the full header clickable; only the title below acts as a handle. */
+  /* The separate child below provides dragging without covering the buttons. */
   -webkit-app-region: no-drag;
 }
 
-.skin-header > div {
+.window-drag-region {
+  position: absolute;
+  inset: 0 86px 0 0;
+
+  display: flex;
+  align-items: center;
+  padding-left: 12px;
+
+  /* Everything except the right-side window controls can move the app. */
   -webkit-app-region: drag;
 }
 

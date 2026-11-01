@@ -800,7 +800,8 @@ function App() {
         <WindowControls />
 
         <header className="skin-header">
-          <div>
+          {/* This area fills the header except for the two window buttons. */}
+          <div className="window-drag-region">
             <p className="eyebrow">DG AUDIO SYSTEM // 03</p>
             {/*
              * The word is drawn by a background image. aria-label keeps the
