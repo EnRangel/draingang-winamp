@@ -28,8 +28,8 @@ input {
 
 .desktop-stage {
   position: relative;
-  width: 390px;
-  height: 499px;
+  width: 429px;
+  height: 549px;
 }
 
 .milestone {
@@ -78,8 +78,8 @@ input {
     inset 0 0 34px #000,
     0 0 0 1px #080808;
   filter: drop-shadow(0 0 16px rgb(93 202 255 / 22%));
-  /* This is the original 0.56 scale enlarged to 108%. */
-  transform: scale(0.6048);
+  /* Increase the old 0.6048 scale by 10% without changing the layout. */
+  transform: scale(0.66528);
   transform-origin: top left;
   user-select: none;
 }
@@ -95,12 +95,6 @@ input {
       transparent 0 14%,
       rgb(255 255 255 / 7%) 14.2%,
       transparent 14.5%
-    ),
-    linear-gradient(
-      76deg,
-      transparent 0 82%,
-      rgb(255 255 255 / 8%) 82.2%,
-      transparent 82.5%
     ),
     repeating-linear-gradient(
       90deg,
@@ -954,7 +948,7 @@ input {
 
 .equalizer-heading-chain {
   position: absolute;
-  top: -13px;
+  top: -11px;
   left: 128px;
   width: 245px;
   height: 66px;
