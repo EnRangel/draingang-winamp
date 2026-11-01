@@ -43,7 +43,6 @@ input {
   left: 0;
   isolation: isolate;
 
-  /* Removing the old padding crops the shell without stretching the tabs. */
   width: 644px;
   height: 824px;
   padding: 0;
@@ -78,7 +77,7 @@ input {
     inset 0 0 34px #000,
     0 0 0 1px #080808;
   filter: drop-shadow(0 0 16px rgb(93 202 255 / 22%));
-  /* Increase the old 0.6048 scale by 10% without changing the layout. */
+  /* Scale the 644x824 skin to fit the 429x549 Electron window. */
   transform: scale(0.66528);
   transform-origin: top left;
   user-select: none;
@@ -242,10 +241,8 @@ input {
   width: 36px;
   height: 32px;
   padding: 0;
-  border: 2px outset #ecece7;
 
   color: #080808;
-  background: linear-gradient(#f7f7f2, #969694 48%, #d8d8d3 52%, #777);
   font-size: 1.2rem;
   font-weight: 900;
   line-height: 1;
@@ -279,33 +276,8 @@ input {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border: 2px outset #92938f;
+  border-width: 2px;
   color: #070707;
-  background:
-    radial-gradient(
-      circle at 14% 30%,
-      rgb(15 15 15 / 35%) 0 1px,
-      transparent 2px
-    ),
-    radial-gradient(
-      circle at 73% 67%,
-      rgb(245 245 240 / 20%) 0 1px,
-      transparent 2px
-    ),
-    repeating-linear-gradient(
-      102deg,
-      transparent 0 21px,
-      rgb(0 0 0 / 16%) 22px 23px
-    ),
-    linear-gradient(#a9aaa6, #484a4a 45%, #858681 51%, #303232);
-  background-size:
-    17px 13px,
-    23px 19px,
-    auto,
-    auto;
-  box-shadow:
-    inset 0 0 0 1px rgb(225 225 220 / 28%),
-    inset 0 0 13px rgb(0 0 0 / 45%);
   /* The separate child below provides dragging without covering the buttons. */
   -webkit-app-region: no-drag;
 }
@@ -375,36 +347,6 @@ input {
   display: grid;
   grid-template-columns: 122px minmax(0, 1fr);
   gap: 7px;
-}
-
-.panel-titlebar {
-  grid-column: 1 / -1;
-  padding: 3px 7px;
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border: 1px solid #252626;
-  color: #080909;
-  background:
-    radial-gradient(
-      circle at 22% 36%,
-      rgb(10 10 10 / 28%) 0 1px,
-      transparent 2px
-    ),
-    repeating-linear-gradient(
-      105deg,
-      transparent 0 19px,
-      rgb(0 0 0 / 16%) 20px 21px
-    ),
-    linear-gradient(90deg, #a9aaa5, #4d4f4e 55%, #858681);
-  background-size:
-    19px 15px,
-    auto,
-    auto;
-  font-size: 0.7rem;
-  font-weight: 900;
-  letter-spacing: 0.1em;
 }
 
 .visual-column,
@@ -709,17 +651,12 @@ input {
 .mode-button,
 .playlist-action,
 .tiny-button {
-  border: 2px outset #a9a9a3;
-
-  color: #efefea;
-  background: linear-gradient(#464644, #111 48%, #30302f 52%, #090909);
   cursor: pointer;
   -webkit-app-region: no-drag;
 }
 
 .transport-button {
   min-width: 42px;
-  height: 36px;
   padding: 0 6px;
   font-size: 0.92rem;
 }
@@ -868,30 +805,14 @@ input {
   align-items: center;
   justify-content: space-between;
 
-  border: 1px solid #252626;
+  border-width: 1px;
   color: #090909;
-  background:
-    radial-gradient(
-      circle at 18% 36%,
-      rgb(10 10 10 / 30%) 0 1px,
-      transparent 2px
-    ),
-    repeating-linear-gradient(
-      105deg,
-      transparent 0 21px,
-      rgb(0 0 0 / 17%) 22px 23px
-    ),
-    linear-gradient(90deg, #a5a6a2, #494b4a 55%, #80817d);
-  background-size:
-    19px 15px,
-    auto,
-    auto;
   font-size: 0.71rem;
   font-weight: 900;
   letter-spacing: 0.08em;
 }
 
-/* The supplied bitmap gives all three title strips real scratched metal. */
+/* Share one scratched-metal texture across all three title strips. */
 .skin-header,
 .panel-heading {
   border-color: #d4d4cd;
@@ -941,9 +862,7 @@ input {
 
 .panel-heading .tiny-button {
   padding: 1px 7px;
-  border-width: 1px;
   color: #090909;
-  background: #d6d6d1;
 }
 
 .equalizer-heading-chain {
@@ -974,16 +893,10 @@ input {
 
 .equalizer-switch {
   padding: 2px 7px;
-  border: 1px outset #deded8;
   color: #111;
-  background: #d0d0ca;
   font-size: 0.76rem;
   line-height: 1;
   cursor: pointer;
-}
-
-.equalizer-switch-active {
-  background: #d7e4e6;
 }
 
 .equalizer-preset-select {
@@ -1469,18 +1382,10 @@ label.playlist-action {
 .playlist-action {
   min-width: 78px;
   padding: 2px 8px;
-  border: 2px outset #c7c7c1;
   color: #101010;
-  background: #c9c9c4;
   font-size: 0.82rem;
   font-weight: 900;
   line-height: 1;
-}
-
-.playlist-action:disabled {
-  color: #292a27;
-  font-weight: 900;
-  cursor: default;
 }
 
 .playlist-footer-summary {
@@ -1502,7 +1407,7 @@ label.playlist-action {
   white-space: nowrap;
 }
 
-/* Give every remaining button the same scratched-metal surface. */
+/* Share the same scratched-metal surface across the silver buttons. */
 .window-minimize-btn,
 .window-close-btn,
 .panel-heading .tiny-button,
@@ -1575,6 +1480,7 @@ label.playlist-action {
     ),
     linear-gradient(#aaa9a4, #62635f 50%, #858681);
   filter: none;
+  font-weight: 900;
   cursor: not-allowed;
 }
 
