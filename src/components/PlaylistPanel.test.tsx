@@ -43,6 +43,8 @@ function renderPlaylist(
       currentTrackIndex={currentTrackIndex}
       isDraggingFile={false}
       isAddingTracks={false}
+      missingTrackCount={0}
+      onDismissMissingTracksWarning={vi.fn()}
       onFileChange={vi.fn()}
       onRemove={vi.fn()}
       onClear={vi.fn()}

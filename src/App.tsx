@@ -48,6 +48,7 @@ function App() {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [playlist, setPlaylist] = useState<Track[]>([]);
+  const [missingTrackCount, setMissingTrackCount] = useState(0);
   const [hasRestoredPlaylist, setHasRestoredPlaylist] = useState(false);
   // -1 means that the playlist does not have a selected track yet.
   const [currentTrackIndex, setCurrentTrackIndex] = useState(-1);
@@ -108,6 +109,7 @@ function App() {
     async function restorePlaylist() {
       const savedReferences = loadSavedPlaylist();
       const restoredTracks: Track[] = [];
+      let skippedTrackCount = 0;
 
       if (savedReferences.length > 0) {
         setIsAddingTracks(true);
@@ -119,6 +121,7 @@ function App() {
           restoredTracks.push(restoredTrack);
         } catch (error) {
           // A moved or deleted song is skipped instead of breaking the app.
+          skippedTrackCount += 1;
           console.warn('Could not restore ' + reference.fileName, error);
         }
       }
@@ -137,6 +140,7 @@ function App() {
       }
 
       setPlaylist(restoredTracks);
+      setMissingTrackCount(skippedTrackCount);
       setIsAddingTracks(false);
       setHasRestoredPlaylist(true);
 
@@ -689,6 +693,10 @@ function App() {
     resetPlayer();
   }
 
+  function handleDismissMissingTracksWarning() {
+    setMissingTrackCount(0);
+  }
+
   function handleMovePlaylistTrack(fromIndex: number, toIndex: number) {
     if (
       fromIndex < 0 ||
@@ -851,6 +859,8 @@ function App() {
           currentTrackIndex={currentTrackIndex}
           isDraggingFile={isDraggingFile}
           isAddingTracks={isAddingTracks}
+          missingTrackCount={missingTrackCount}
+          onDismissMissingTracksWarning={handleDismissMissingTracksWarning}
           onFileChange={handleTrackFileChange}
           onRemove={handleRemoveTrackBtnClick}
           onClear={handleClearPlaylistBtnClick}
