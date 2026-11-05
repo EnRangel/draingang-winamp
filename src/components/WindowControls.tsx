@@ -1,5 +1,12 @@
+// MouseEvent tells TypeScript that this event came from an HTML button.
+import type { MouseEvent } from 'react';
+
 function WindowControls() {
-  function handleMinimizeClick() {
+  function handleMinimizeClick(event: MouseEvent<HTMLButtonElement>) {
+    // Electron keeps button focus while its window is hidden. Removing focus
+    // before minimizing prevents that highlight from appearing after restore.
+    event.currentTarget.blur();
+
     // void starts the asynchronous request without making React wait for it.
     void window.electronAPI.minimizeWindow();
   }
