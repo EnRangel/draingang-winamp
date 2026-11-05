@@ -236,6 +236,7 @@ input {
 
 .window-minimize-btn,
 .window-close-btn {
+  appearance: none;
   position: static;
 
   width: 36px;
@@ -258,9 +259,13 @@ input {
   color: #60000f;
 }
 
+/* Keep Minimize silver while hovered because Electron can preserve :hover
+   while a frameless window is minimized. Its pressed style still gives feedback. */
 .window-minimize-btn:hover {
-  color: #000;
-  background: #86ddff;
+  color: #041017;
+  background-color: #858681;
+  background-image: var(--dirty-silver-button-image);
+  filter: none;
 }
 
 .window-close-btn:hover {
@@ -1413,10 +1418,7 @@ label.playlist-action {
 .panel-heading .tiny-button,
 .equalizer-switch,
 .playlist-action {
-  border: 2px outset #d4d4cd;
-  border-radius: 0;
-  background-color: #858681;
-  background-image:
+  --dirty-silver-button-image:
     radial-gradient(circle at 18% 28%, rgb(0 0 0 / 30%) 0 1px, transparent 2px),
     radial-gradient(
       circle at 76% 68%,
@@ -1430,6 +1432,11 @@ label.playlist-action {
       transparent 18px
     ),
     linear-gradient(#d1d1ca 0%, #777873 43%, #b9b9b3 52%, #5d5e5a 100%);
+
+  border: 2px outset #d4d4cd;
+  border-radius: 0;
+  background-color: #858681;
+  background-image: var(--dirty-silver-button-image);
   background-size:
     17px 14px,
     23px 19px,
@@ -1442,7 +1449,6 @@ label.playlist-action {
   text-shadow: 0 1px rgb(255 255 255 / 35%);
 }
 
-.window-minimize-btn:hover,
 .window-close-btn:hover,
 .panel-heading .tiny-button:hover,
 .playlist-action:hover {

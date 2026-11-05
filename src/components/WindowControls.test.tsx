@@ -19,9 +19,14 @@ describe('WindowControls', () => {
     const user = userEvent.setup();
     render(<WindowControls />);
 
-    await user.click(screen.getByRole('button', { name: 'Minimize Drainamp' }));
+    const minimizeButton = screen.getByRole('button', {
+      name: 'Minimize Drainamp',
+    });
+
+    await user.click(minimizeButton);
 
     expect(window.electronAPI.minimizeWindow).toHaveBeenCalledOnce();
+    expect(minimizeButton).not.toHaveFocus();
   });
 
   it('asks Electron to close the window', async () => {
