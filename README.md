@@ -99,7 +99,7 @@ Electron IPC handlers.
 
 Drainamp draws from internet-grunge artwork, classic desktop media players, and
 the visual worlds surrounding Bladee, Ecco2k, Thaiboy Digital, Yung Lean, Drain
-Gang (Draingang), and Sad Boys (SadBoys). It combines those influences with an
+Gang, and Sad Boys. It combines those influences with an
 original interactive music-player interface rather than presenting itself as
 an official artist product.
 
