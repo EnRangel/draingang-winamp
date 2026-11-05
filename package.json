@@ -4,11 +4,13 @@
   "version": "1.0.0",
   "private": true,
   "description": "A learning-focused desktop music player inspired by classic Winamp skins.",
+  "author": "EnRangel",
   "keywords": [],
   "license": "MIT",
   "main": ".webpack/main/index.cjs",
   "scripts": {
     "start": "electron-forge start",
+    "icon:build": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/create-windows-icon.ps1",
     "package": "electron-forge package",
     "make": "electron-forge make",
     "release": "electron-forge release",
