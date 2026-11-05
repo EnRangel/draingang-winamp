@@ -1,6 +1,8 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import started from 'electron-squirrel-startup';
 import { readFile } from 'node:fs/promises';
+
+import drainBabyIcon from './assets/drain-baby.png';
 // ipcMain receives messages in Electron’s main process.
 
 // Webpack creates these two values while it builds the application.
@@ -34,6 +36,8 @@ function createWindow(): void {
     backgroundColor: '#00000000',
     hasShadow: false,
     title: 'Drainamp',
+    // The PNG gives the development window the same Drain Baby taskbar icon.
+    icon: drainBabyIcon,
     webPreferences: {
       // The preload file is our limited bridge to desktop-only features.
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,

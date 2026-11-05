@@ -7,12 +7,21 @@ import { FuseV1Options, FuseVersion } from '@electron/fuses';
 import { mainConfig } from './webpack.main.config';
 import { rendererConfig } from './webpack.renderer.config';
 
+const windowsIconPath = './assets/drainamp.ico';
+
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
+    // Electron embeds this icon into Drainamp.exe and its Windows shortcuts.
+    icon: windowsIconPath,
   },
   // Drainamp currently ships as a Windows Squirrel installer.
-  makers: [new MakerSquirrel({})],
+  makers: [
+    new MakerSquirrel({
+      // setupIcon changes the icon displayed by the Windows installer itself.
+      setupIcon: windowsIconPath,
+    }),
+  ],
   plugins: [
     new WebpackPlugin({
       /*
